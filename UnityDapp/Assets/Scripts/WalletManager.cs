@@ -10,6 +10,8 @@ using Nethereum.Util;
 using UnityEngine;
 using Nethereum.Hex.HexConvertors.Extensions;
 using Nethereum.KeyStore.Crypto;
+using NBitcoin;
+using Nethereum.HdWallet;
 
 public class WalletManager : MonoBehaviour
 {
@@ -21,6 +23,7 @@ public class WalletManager : MonoBehaviour
     public string password;
     public string encryptedJson;
     public string jsonPath;
+    public Mnemonic mnemo;
 
     public void Awake()
     {
@@ -37,30 +40,36 @@ public class WalletManager : MonoBehaviour
 
     public void CreateAccount(string password)
     {
-        var ecKey = Nethereum.Signer.EthECKey.GenerateKey();
-        var address = ecKey.GetPublicAddress();
-        var privateKey = ecKey.GetPrivateKeyAsBytes();
+        mnemo = new Mnemonic(Wordlist.English, WordCount.Twelve);
+        var wallet = new Wallet(mnemo.ToString(), password);
+        var account = wallet.GetAccount(0);
+
+        var address = account.Address;
+        var privateKey = account.PrivateKey;
+
 
         var keystoreservice = new Nethereum.KeyStore.KeyStoreService();
-        string encryptedJson = keystoreservice.EncryptAndGenerateDefaultKeyStoreAsJson(password, privateKey, address);
+        string encryptedJson = keystoreservice.EncryptAndGenerateDefaultKeyStoreAsJson(password, wallet.GetPrivateKey(0), address);
         File.WriteAllText(jsonPath, encryptedJson);
 
-        this.password = password;
-        this.publicAddress = address;
-        this.privateKey = ecKey.GetPrivateKey();
-        this.encryptedJson = encryptedJson;
+        //this.password = password;
+        //this.publicAddress = address;
+        //this.privateKey = ecKey.GetPrivateKey();
+        //this.encryptedJson = encryptedJson;
     }
 
     public void ImportAccountFromJson(string password, string encryptedJson)
     {
-        var keystoreservice = new Nethereum.KeyStore.KeyStoreService();
-        byte[] privateKey;
-        string address;
-
         try
         {
-            privateKey = keystoreservice.DecryptKeyStoreFromJson(password, encryptedJson);
-            address = keystoreservice.GetAddressFromKeyStore(encryptedJson);
+            var keystoreservice = new Nethereum.KeyStore.KeyStoreService();
+            var privateKey = keystoreservice.DecryptKeyStoreFromJson(password, encryptedJson);
+            var address = keystoreservice.GetAddressFromKeyStore(encryptedJson);
+
+            this.password = password;
+            this.publicAddress = address;
+            this.privateKey = ConvertKey(privateKey);
+            this.encryptedJson = encryptedJson;
         }
         catch (DecryptionException ex)
         {
@@ -68,11 +77,6 @@ public class WalletManager : MonoBehaviour
             FindObjectOfType<Account>().passwordNotice.enabled = true;
             return;
         }
-
-        this.password = password;
-        this.publicAddress = address;
-        this.privateKey = ConvertKey(privateKey);
-        this.encryptedJson = encryptedJson;
     }
 
     public void ImportAccountFromPrivateKey(string key)
@@ -122,13 +126,13 @@ public class WalletManager : MonoBehaviour
     }
 
     // execute contact function with view keyword or contact field, it doesn't need gas
-    public IEnumerator CallTransaction(CallInput callInput, System.Action<UnityRequest<string>> result)
-    {
-        var callRequest = new EthCallUnityRequest(URL);
+    //public IEnumerator CallTransaction(CallInput callInput, System.Action<UnityRequest<string>> result)
+    //{
+    //    var callRequest = new EthCallUnityRequest(URL);
 
-        yield return callRequest.SendRequest(callInput, Nethereum.RPC.Eth.DTOs.BlockParameter.CreateLatest());
+    //    yield return callRequest.SendRequest(callInput, Nethereum.RPC.Eth.DTOs.BlockParameter.CreateLatest());
 
-        if (result != null)
-            result.Invoke(callRequest);
-    }
+    //    if (result != null)
+    //        result.Invoke(callRequest);
+    //}
 }

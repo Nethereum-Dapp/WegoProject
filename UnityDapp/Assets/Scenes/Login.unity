@@ -2879,12 +2879,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 688f016e9b03c854cb1e39e923bcbf03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  URL: 
+  URL: http://121.140.127.51:7766
   publicAddress: 
   privateKey: 
   password: 
   encryptedJson: 
-  jsonPath: C:\developer.yhl\Wego_Project\NethereumDApp\.secret.json
+  jsonPath: C:\developer.yhl\Wego_Project\WegoProject\.secret.json
 --- !u!114 &1075555404
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2915,17 +2915,14 @@ MonoBehaviour:
   json: 
   password: 
   privateKey: 
-  gas: 0
-  gasPrice: 0
-  transferAmount: 0
+  gas: 3000000
+  gasPrice: 2
+  transferAmount: 0.1
   toAddress: 
   signUpPW: {fileID: 1380121648}
   signInPW: {fileID: 1253776291}
   passwordStrength: {fileID: 1349740284}
   passwordNotice: {fileID: 60027278}
-  addr: {fileID: 0}
-  balance: {fileID: 0}
-  tx: {fileID: 0}
   seedPanel: {fileID: 541764289}
   forgotPanel: {fileID: 1380106533}
   seedText: {fileID: 913666155}
