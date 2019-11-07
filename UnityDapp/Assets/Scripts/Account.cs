@@ -53,6 +53,8 @@ public class Account : MonoBehaviour
     private void Start()
     {
         IsEncryptedJson();
+
+        DontDestroyOnLoad(gameObject);
     }
 
     void Update()
@@ -158,10 +160,13 @@ public class Account : MonoBehaviour
                 string seedWord = submitSeedText.text;
                 string password = submitPWText.text;
 
-                var wallet3 = new Wallet(seedWord, password);
-                var recoveredAccount = wallet3.GetAccount(0);
-                Debug.Log(recoveredAccount.Address + " " + recoveredAccount.PrivateKey);
+                var wallet = new Wallet(seedWord, "rubidium");
+                var recoveredAccount = wallet.GetAccount(0);
+                var address = recoveredAccount.Address;
+                var privateKey = recoveredAccount.PrivateKey;
 
+                WalletManager.Instance.EncryptedJson(password, wallet.GetPrivateKey(0), address);
+                IsEncryptedJson();
                 CancleForgotPanel();
 
                 Debug.Log("New password:" + password);
@@ -210,8 +215,8 @@ public class Account : MonoBehaviour
         CreateDefaultAccount();
 
         HexBigInteger gas = new HexBigInteger(new BigInteger(this.gas));
-        HexBigInteger gasPrice = new HexBigInteger(Nethereum.Util.UnitConversion.Convert.ToWei(this.gasPrice, UnitConversion.EthUnit.Gwei));
-        HexBigInteger value = new HexBigInteger(Nethereum.Util.UnitConversion.Convert.ToWei(transferAmount));
+        HexBigInteger gasPrice = new HexBigInteger(UnitConversion.Convert.ToWei(this.gasPrice, UnitConversion.EthUnit.Gwei));
+        HexBigInteger value = new HexBigInteger(UnitConversion.Convert.ToWei(transferAmount));
 
         TransactionInput input = WalletManager.Instance.GetTransferEtherInput(null, toAddress,
                 gas, gasPrice, value);

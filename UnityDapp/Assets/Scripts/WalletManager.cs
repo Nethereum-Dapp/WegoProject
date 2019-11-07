@@ -41,21 +41,24 @@ public class WalletManager : MonoBehaviour
     public void CreateAccount(string password)
     {
         mnemo = new Mnemonic(Wordlist.English, WordCount.Twelve);
-        var wallet = new Wallet(mnemo.ToString(), password);
+        var wallet = new Wallet(mnemo.ToString(), "rubidium");
         var account = wallet.GetAccount(0);
-
         var address = account.Address;
         var privateKey = account.PrivateKey;
 
-
-        var keystoreservice = new Nethereum.KeyStore.KeyStoreService();
-        string encryptedJson = keystoreservice.EncryptAndGenerateDefaultKeyStoreAsJson(password, wallet.GetPrivateKey(0), address);
-        File.WriteAllText(jsonPath, encryptedJson);
+        EncryptedJson(password, wallet.GetPrivateKey(0), address);
 
         //this.password = password;
         //this.publicAddress = address;
         //this.privateKey = ecKey.GetPrivateKey();
         //this.encryptedJson = encryptedJson;
+    }
+
+    public void EncryptedJson(string password, byte[] key, string address)
+    {
+        var keystoreservice = new Nethereum.KeyStore.KeyStoreService();
+        string encryptedJson = keystoreservice.EncryptAndGenerateDefaultKeyStoreAsJson(password, key, address);
+        File.WriteAllText(jsonPath, encryptedJson);
     }
 
     public void ImportAccountFromJson(string password, string encryptedJson)
