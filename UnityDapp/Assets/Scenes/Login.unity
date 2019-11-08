@@ -2711,7 +2711,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1075555405}
-        m_MethodName: ImportAccountFromJson
+        m_MethodName: GetBalance
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2918,7 +2918,7 @@ MonoBehaviour:
   gas: 3000000
   gasPrice: 2
   transferAmount: 0.1
-  toAddress: 
+  toAddress: 0xB9ae8A6ebf0f43e2cC867A57A94355320DCe6b41
   signUpPW: {fileID: 1380121648}
   signInPW: {fileID: 1253776291}
   passwordStrength: {fileID: 1349740284}

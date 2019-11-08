@@ -50,10 +50,12 @@ public class Account : MonoBehaviour
     public Text passwordStrength2;
     public Text missingText;
 
+    RubiTokenWrapper tokenContractService;
+
     private void Start()
     {
         IsEncryptedJson();
-
+        tokenContractService = new RubiTokenWrapper();
         DontDestroyOnLoad(gameObject);
     }
 
@@ -104,13 +106,24 @@ public class Account : MonoBehaviour
 
     public void GetBalance()
     {
-        CreateDefaultAccount();
+        //CreateDefaultAccount();
 
-        StartCoroutine(WalletManager.Instance.GetAccountBalance((decimal amount) =>
-        {
-            Debug.Log("Balance:" + amount);
-            //balance.text = "Balance:" + amount;
-        }));
+        //StartCoroutine(WalletManager.Instance.GetAccountBalance((decimal amount) =>
+        //{
+        //    Debug.Log("Balance:" + amount);
+        //    //balance.text = "Balance:" + amount;
+        //}));
+        StartCoroutine(Send(toAddress));
+    }
+
+    public IEnumerator Send(string address)
+    {
+        var getBalance = tokenContractService.CreateBalanceOfCallInput(address);
+        var transactionSignedRequest = new TransactionSignedUnityRequest(WalletManager.Instance.URL, privateKey);
+        yield return transactionSignedRequest.SignAndSendTransaction(getBalance);
+
+        Debug.Log(transactionSignedRequest.Result);
+        Debug.Log(transactionSignedRequest.Exception.Message);
     }
 
     private void CreateDefaultAccount()
