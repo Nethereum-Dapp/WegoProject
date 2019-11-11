@@ -23,6 +23,7 @@ public class WalletManager : MonoBehaviour
     public string password;
     public string encryptedJson;
     public string jsonPath;
+    public bool isLogin = false;
     public Mnemonic mnemo;
 
     public void Awake()
@@ -68,6 +69,7 @@ public class WalletManager : MonoBehaviour
             var keystoreservice = new Nethereum.KeyStore.KeyStoreService();
             var privateKey = keystoreservice.DecryptKeyStoreFromJson(password, encryptedJson);
             var address = keystoreservice.GetAddressFromKeyStore(encryptedJson);
+            isLogin = true;
 
             this.password = password;
             this.publicAddress = address;
@@ -78,6 +80,7 @@ public class WalletManager : MonoBehaviour
         {
             Debug.Log("DecryptionException");
             FindObjectOfType<Account>().passwordNotice.enabled = true;
+            isLogin = false;
             return;
         }
     }

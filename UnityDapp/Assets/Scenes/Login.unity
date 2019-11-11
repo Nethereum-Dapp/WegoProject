@@ -981,7 +981,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1075555406}
+      - m_Target: {fileID: 828748629}
         m_MethodName: AccountButton
         m_Mode: 1
         m_Arguments:
@@ -1975,6 +1975,54 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 787334283}
   m_CullTransparentMesh: 0
+--- !u!1 &828748628
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 828748630}
+  - component: {fileID: 828748629}
+  m_Layer: 0
+  m_Name: UIManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &828748629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 828748628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a54bbf8f4718ce84ead578ecba4d131f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  creatCanvas: {fileID: 1199614695}
+  loginCanvas: {fileID: 837939387}
+  passwordStrength: {fileID: 1349740284}
+  passwordStrength2: {fileID: 1642068132}
+  creatFlag: 0
+--- !u!4 &828748630
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 828748628}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 971.349, y: 581.7251, z: -2.9494295}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &837939387
 GameObject:
   m_ObjectHideFlags: 0
@@ -2431,7 +2479,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1075555406}
+      - m_Target: {fileID: 828748629}
         m_MethodName: AccountButton
         m_Mode: 1
         m_Arguments:
@@ -2711,7 +2759,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1075555405}
-        m_MethodName: GetBalance
+        m_MethodName: ImportAccountFromJson
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2845,7 +2893,6 @@ GameObject:
   - component: {fileID: 1075555405}
   - component: {fileID: 1075555404}
   - component: {fileID: 1075555403}
-  - component: {fileID: 1075555406}
   m_Layer: 0
   m_Name: LoginManager
   m_TagString: Untagged
@@ -2885,6 +2932,7 @@ MonoBehaviour:
   password: 
   encryptedJson: 
   jsonPath: C:\developer.yhl\Wego_Project\WegoProject\.secret.json
+  isLogin: 0
 --- !u!114 &1075555404
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2918,33 +2966,16 @@ MonoBehaviour:
   gas: 3000000
   gasPrice: 2
   transferAmount: 0.1
-  toAddress: 0xB9ae8A6ebf0f43e2cC867A57A94355320DCe6b41
+  toAddress: 
   signUpPW: {fileID: 1380121648}
   signInPW: {fileID: 1253776291}
-  passwordStrength: {fileID: 1349740284}
   passwordNotice: {fileID: 60027278}
   seedPanel: {fileID: 541764289}
   forgotPanel: {fileID: 1380106533}
   seedText: {fileID: 913666155}
   submitSeedText: {fileID: 2031018719}
   submitPWText: {fileID: 184948398}
-  passwordStrength2: {fileID: 1642068132}
   missingText: {fileID: 1067577124}
---- !u!114 &1075555406
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1075555401}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a54bbf8f4718ce84ead578ecba4d131f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  creatCanvas: {fileID: 1199614695}
-  loginCanvas: {fileID: 837939387}
-  creatFlag: 0
 --- !u!1 &1199614695
 GameObject:
   m_ObjectHideFlags: 0

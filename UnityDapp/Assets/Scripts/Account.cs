@@ -12,9 +12,12 @@ using Nethereum.HdWallet;
 using Nethereum.Web3;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Account : MonoBehaviour
 {
+    public static Account Instance = null;
+
     [Space]
     public string json;
     public string password;
@@ -32,7 +35,6 @@ public class Account : MonoBehaviour
     [Space]
     public InputField signUpPW;
     public InputField signInPW;
-    public Text passwordStrength;
     public Text passwordNotice;
 
     [Space]
@@ -47,43 +49,19 @@ public class Account : MonoBehaviour
     public Text seedText;
     public InputField submitSeedText;
     public InputField submitPWText;
-    public Text passwordStrength2;
     public Text missingText;
 
     RubiTokenWrapper tokenContractService;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
         IsEncryptedJson();
         tokenContractService = new RubiTokenWrapper();
-        DontDestroyOnLoad(gameObject);
-    }
-
-    void Update()
-    {
-        if (signUpPW.isActiveAndEnabled)
-        {
-            if (signUpPW.text.Length > 7)
-            {
-                passwordStrength.enabled = false;
-            }
-            else
-            {
-                passwordStrength.enabled = true;
-            }
-        }
-
-        if (forgotPanel.activeSelf)
-        {
-            if (submitPWText.text.Length > 7)
-            {
-                passwordStrength2.enabled = false;
-            }
-            else
-            {
-                passwordStrength2.enabled = true;
-            }
-        }
     }
 
     public void IsEncryptedJson()
@@ -157,7 +135,7 @@ public class Account : MonoBehaviour
     public void CopySeedBt()
     {
         UniClipboard.SetText(seedText.text);
-        seedPanel.SetActive(false);
+        SceneManager.LoadScene(0);
     }
 
     public void ForgotPassword()
@@ -203,6 +181,11 @@ public class Account : MonoBehaviour
         {
             password = signInPW.text;
             WalletManager.Instance.ImportAccountFromJson(password, json);
+            if (WalletManager.Instance.isLogin)
+            {
+                DontDestroyOnLoad(gameObject);
+                SceneManager.LoadScene("MyRoom");
+            }
 
             Debug.Log("Address:" + WalletManager.Instance.publicAddress);
             Debug.Log("PrivateKey:" + WalletManager.Instance.privateKey);
