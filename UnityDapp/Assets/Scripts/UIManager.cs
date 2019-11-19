@@ -13,9 +13,9 @@ public class UIManager : MonoBehaviour
 
     void Update()
     {
-        if (Account.Instance.signUpPW.isActiveAndEnabled)
+        if (AccountManager.Instance.signUpPW.isActiveAndEnabled)
         {
-            if (Account.Instance.signUpPW.text.Length > 7)
+            if (AccountManager.Instance.signUpPW.text.Length > 7)
             {
                 passwordStrength.enabled = false;
             }
@@ -25,9 +25,9 @@ public class UIManager : MonoBehaviour
             }
         }
 
-        if (Account.Instance.forgotPanel.activeSelf)
+        if (AccountManager.Instance.forgotPanel.activeSelf)
         {
-            if (Account.Instance.submitPWText.text.Length > 7)
+            if (AccountManager.Instance.submitPWText.text.Length > 7)
             {
                 passwordStrength2.enabled = false;
             }

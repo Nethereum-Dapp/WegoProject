@@ -12,6 +12,8 @@ using Nethereum.Hex.HexConvertors.Extensions;
 using Nethereum.KeyStore.Crypto;
 using NBitcoin;
 using Nethereum.HdWallet;
+using Nethereum.Web3;
+using Nethereum.Web3.Accounts;
 
 public class WalletManager : MonoBehaviour
 {
@@ -79,7 +81,7 @@ public class WalletManager : MonoBehaviour
         catch (DecryptionException ex)
         {
             Debug.Log("DecryptionException");
-            FindObjectOfType<Account>().passwordNotice.enabled = true;
+            FindObjectOfType<AccountManager>().passwordNotice.enabled = true;
             isLogin = false;
             return;
         }

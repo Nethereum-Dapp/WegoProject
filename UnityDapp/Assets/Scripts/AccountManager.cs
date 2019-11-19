@@ -10,13 +10,17 @@ using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Util;
 using Nethereum.HdWallet;
 using Nethereum.Web3;
+using Nethereum.Web3.Accounts;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Threading;
+using System.Threading.Tasks;
+using Nethereum.Contracts;
 
-public class Account : MonoBehaviour
+public class AccountManager : MonoBehaviour
 {
-    public static Account Instance = null;
+    public static AccountManager Instance = null;
 
     [Space]
     public string json;
@@ -51,7 +55,10 @@ public class Account : MonoBehaviour
     public InputField submitPWText;
     public Text missingText;
 
-    RubiTokenWrapper tokenContractService;
+    private static RubiTokenWrapper tokenContractService;
+    private Account account;
+    private Contract contract;
+    public Web3 web3;
 
     private void Awake()
     {
@@ -60,8 +67,87 @@ public class Account : MonoBehaviour
 
     private void Start()
     {
+        DontDestroyOnLoad(gameObject);
         IsEncryptedJson();
         tokenContractService = new RubiTokenWrapper();
+    }
+
+    public static async void GetTokenApprove()
+    {
+        var approve = await tokenContractService.GetFunctionApprove().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
+        Debug.Log("Approve : " + approve);
+    }
+
+    public static async void GetTokenIncreaseAllowance()
+    {
+        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
+        Debug.Log("Balance : " + balance);
+    }
+
+    public static async void GetTokenReounceOwnership()
+    {
+        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
+        Debug.Log("Balance : " + balance);
+    }
+
+    public static async void GetTokenTransfer()
+    {
+        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
+        Debug.Log("Balance : " + balance);
+    }
+
+    public static async void GetTokenTransferFrom()
+    {
+        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
+        Debug.Log("Balance : " + balance);
+    }
+
+    public static async void GetTokenTransferOwnership()
+    {
+        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
+        Debug.Log("Balance : " + balance);
+    }
+
+    public static async void GetTokenBalanceOf()
+    {
+        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
+        Debug.Log("Balance : " + balance);
+    }
+
+    public static async void GetTokenDecimals()
+    {
+        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
+        Debug.Log("Balance : " + balance);
+    }
+
+    public static async void GetTokenIsOwner()
+    {
+        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
+        Debug.Log("Balance : " + balance);
+    }
+
+    public static async void GetTokenName()
+    {
+        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
+        Debug.Log("Balance : " + balance);
+    }
+
+    public static async void GetTokenOwner()
+    {
+        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
+        Debug.Log("Balance : " + balance);
+    }
+
+    public static async void GetTokenSymbol()
+    {
+        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
+        Debug.Log("Balance : " + balance);
+    }
+
+    public static async void GetTokenTotalSupply()
+    {
+        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
+        Debug.Log("Balance : " + balance);
     }
 
     public void IsEncryptedJson()
@@ -80,28 +166,6 @@ public class Account : MonoBehaviour
             uiManager.creatFlag = true;
             uiManager.AccountButton();
         }
-    }
-
-    public void GetBalance()
-    {
-        //CreateDefaultAccount();
-
-        //StartCoroutine(WalletManager.Instance.GetAccountBalance((decimal amount) =>
-        //{
-        //    Debug.Log("Balance:" + amount);
-        //    //balance.text = "Balance:" + amount;
-        //}));
-        StartCoroutine(Send(toAddress));
-    }
-
-    public IEnumerator Send(string address)
-    {
-        var getBalance = tokenContractService.CreateBalanceOfCallInput(address);
-        var transactionSignedRequest = new TransactionSignedUnityRequest(WalletManager.Instance.URL, privateKey);
-        yield return transactionSignedRequest.SignAndSendTransaction(getBalance);
-
-        Debug.Log(transactionSignedRequest.Result);
-        Debug.Log(transactionSignedRequest.Exception.Message);
     }
 
     private void CreateDefaultAccount()
@@ -183,7 +247,11 @@ public class Account : MonoBehaviour
             WalletManager.Instance.ImportAccountFromJson(password, json);
             if (WalletManager.Instance.isLogin)
             {
-                DontDestroyOnLoad(gameObject);
+                account = new Account(WalletManager.Instance.privateKey);
+                web3 = new Web3(account, WalletManager.Instance.URL);
+                tokenContractService.ContractConect();
+                GetTokenBalanceOf();
+
                 SceneManager.LoadScene("MyRoom");
             }
 
@@ -231,6 +299,15 @@ public class Account : MonoBehaviour
         }));
     }
 
+    private void OpenWegoscan(string result)
+    {
+        if (WalletManager.Instance.URL.Contains("7766"))
+        {
+            // tx.text = "Tx:" + result;
+            string Wegoscan = "http://125.133.75.165:8083/blocks/0/txnList/";
+            Application.OpenURL(Wegoscan + result);
+        }
+    }
     //public void DeployContact()
     //{
     //    CreateDefaultAccount();
@@ -339,14 +416,4 @@ public class Account : MonoBehaviour
 
     //    addr.text = "Address:" + WalletManager.Instance.publicAddress;
     //}
-
-    private void OpenWegoscan(string result)
-    {
-        if (WalletManager.Instance.URL.Contains("7766"))
-        {
-            // tx.text = "Tx:" + result;
-            string Wegoscan = "http://125.133.75.165:8083/blocks/0/txnList/";
-            Application.OpenURL(Wegoscan + result);
-        }
-    }
 }
