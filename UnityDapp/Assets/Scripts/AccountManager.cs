@@ -17,6 +17,7 @@ using UnityEngine.SceneManagement;
 using System.Threading;
 using System.Threading.Tasks;
 using Nethereum.Contracts;
+using Nethereum.ABI.FunctionEncoding.Attributes;
 
 public class AccountManager : MonoBehaviour
 {
@@ -32,7 +33,7 @@ public class AccountManager : MonoBehaviour
     [Tooltip("Using Unit: Gwei")]
     public float gasPrice;
     [Tooltip("Using Unit :Ether")]
-    public float transferAmount;
+    public int transferAmount;
     [Tooltip("The Address You Want to Transfer Ether")]
     public string toAddress;
 
@@ -56,9 +57,6 @@ public class AccountManager : MonoBehaviour
     public Text missingText;
 
     private static RubiTokenWrapper tokenContractService;
-    private Account account;
-    private Contract contract;
-    public Web3 web3;
 
     private void Awake()
     {
@@ -72,79 +70,55 @@ public class AccountManager : MonoBehaviour
         tokenContractService = new RubiTokenWrapper();
     }
 
-    public static async void GetTokenApprove()
+    [Function("transfer", "bool")]
+    public class TransferFunction : FunctionMessage
     {
-        var approve = await tokenContractService.GetFunctionApprove().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
-        Debug.Log("Approve : " + approve);
+        [Parameter("address", "recipient", 1)]
+        public string To { get; set; }
+
+        [Parameter("uint256", "amount", 2)]
+        public BigInteger TokenAmount { get; set; }
     }
 
-    public static async void GetTokenIncreaseAllowance()
+    [Event("Transfer")]
+    public class TransferEventDTO : IEventDTO
     {
-        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
-        Debug.Log("Balance : " + balance);
+        [Parameter("address", "_from", 1, true)]
+        public string From { get; set; }
+
+        [Parameter("address", "_to", 2, true)]
+        public string To { get; set; }
+
+        [Parameter("uint256", "_value", 3, false)]
+        public BigInteger Value { get; set; }
     }
 
-    public static async void GetTokenReounceOwnership()
+    public async void GetTokenTransfer()
     {
-        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
-        Debug.Log("Balance : " + balance);
+        var account = new Account("BE1EEA742C92A0F3179487744154575561ECF63B01315D9F043B684F06DE2817");
+        var web3 = new Web3(account, WalletManager.Instance.URL);
+        var transferHandler = web3.Eth.GetContractTransactionHandler<TransferFunction>();
+
+        var transfer = new TransferFunction()
+        {
+            To = toAddress,
+            TokenAmount = UnitConversion.Convert.ToWei(transferAmount)
+        };
+
+        var transactionReceipt2 = await transferHandler.SendRequestAndWaitForReceiptAsync(tokenContractService.contract.Address, transfer);
+        var transferEventOutput = transactionReceipt2.DecodeAllEvents<TransferEventDTO>();
+        var transferEventHandler = web3.Eth.GetEvent<TransferEventDTO>(tokenContractService.contract.Address);
+        var filterAllTransferEventsForContract = transferEventHandler.CreateFilterInput();
+        var allTransferEventsForContract = await transferEventHandler.GetAllChanges(filterAllTransferEventsForContract);
+        Debug.Log("Transfer event TransactionHash : " + allTransferEventsForContract[0].Log.TransactionHash);
+
+
+        //var gas = await tokenContractService.GetFunctionTransfer().EstimateGasAsync(WalletManager.Instance.publicAddress, null, null, toAddress, transferAmount);
+        //Debug.Log(WalletManager.Instance.publicAddress + "" + toAddress);
+        //var receiptAmountSend = await tokenContractService.GetFunctionTransfer().SendTransactionAndWaitForReceiptAsync(WalletManager.Instance.publicAddress, gas, null, null, toAddress, transferAmount);
     }
 
-    public static async void GetTokenTransfer()
-    {
-        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
-        Debug.Log("Balance : " + balance);
-    }
-
-    public static async void GetTokenTransferFrom()
-    {
-        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
-        Debug.Log("Balance : " + balance);
-    }
-
-    public static async void GetTokenTransferOwnership()
-    {
-        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
-        Debug.Log("Balance : " + balance);
-    }
-
-    public static async void GetTokenBalanceOf()
-    {
-        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
-        Debug.Log("Balance : " + balance);
-    }
-
-    public static async void GetTokenDecimals()
-    {
-        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
-        Debug.Log("Balance : " + balance);
-    }
-
-    public static async void GetTokenIsOwner()
-    {
-        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
-        Debug.Log("Balance : " + balance);
-    }
-
-    public static async void GetTokenName()
-    {
-        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
-        Debug.Log("Balance : " + balance);
-    }
-
-    public static async void GetTokenOwner()
-    {
-        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
-        Debug.Log("Balance : " + balance);
-    }
-
-    public static async void GetTokenSymbol()
-    {
-        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
-        Debug.Log("Balance : " + balance);
-    }
-
-    public static async void GetTokenTotalSupply()
+    public async void GetTokenBalanceOf()
     {
         var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
         Debug.Log("Balance : " + balance);
@@ -247,12 +221,7 @@ public class AccountManager : MonoBehaviour
             WalletManager.Instance.ImportAccountFromJson(password, json);
             if (WalletManager.Instance.isLogin)
             {
-                account = new Account(WalletManager.Instance.privateKey);
-                web3 = new Web3(account, WalletManager.Instance.URL);
-                tokenContractService.ContractConect();
-                GetTokenBalanceOf();
-
-                SceneManager.LoadScene("MyRoom");
+                //SceneManager.LoadScene("MyRoom");
             }
 
             Debug.Log("Address:" + WalletManager.Instance.publicAddress);

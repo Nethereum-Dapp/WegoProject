@@ -27,6 +27,7 @@ public class WalletManager : MonoBehaviour
     public string jsonPath;
     public bool isLogin = false;
     public Mnemonic mnemo;
+    public Account account;
 
     public void Awake()
     {
@@ -45,7 +46,7 @@ public class WalletManager : MonoBehaviour
     {
         mnemo = new Mnemonic(Wordlist.English, WordCount.Twelve);
         var wallet = new Wallet(mnemo.ToString(), "rubidium");
-        var account = wallet.GetAccount(0);
+        account = wallet.GetAccount(0);
         var address = account.Address;
         var privateKey = account.PrivateKey;
 

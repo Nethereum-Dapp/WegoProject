@@ -1,5 +1,6 @@
 ﻿using Nethereum.Contracts;
 using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
 
 public class RubiTokenWrapper
 {
@@ -10,17 +11,8 @@ public class RubiTokenWrapper
 
     public RubiTokenWrapper()
     {
-        contract = new Contract(null, contractABI, contractAddress);
-    }
-
-    public void ContractConect()
-    {
-        contract = AccountManager.Instance.web3.Eth.GetContract(contractABI, contractAddress);
-    }
-
-    public Function GetFunctionApprove()
-    {
-        return contract.GetFunction("approve");
+        var web3 = new Web3(WalletManager.Instance.URL);
+        contract = web3.Eth.GetContract(contractABI, contractAddress);
     }
 
     public Function GetFunctionDecreaseAllowance()
