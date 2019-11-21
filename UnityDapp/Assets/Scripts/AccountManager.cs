@@ -26,16 +26,16 @@ public class AccountManager : MonoBehaviour
     [Space]
     public string json;
     public string password;
-    public string privateKey;
+    //public string privateKey;
 
-    [Space]
-    public int gas;
-    [Tooltip("Using Unit: Gwei")]
-    public float gasPrice;
-    [Tooltip("Using Unit :Ether")]
-    public int transferAmount;
-    [Tooltip("The Address You Want to Transfer Ether")]
-    public string toAddress;
+    //[Space]
+    //public int gas;
+    //[Tooltip("Using Unit: Gwei")]
+    //public float gasPrice;
+    //[Tooltip("Using Unit :Ether")]
+    //public int transferAmount;
+    //[Tooltip("The Address You Want to Transfer Ether")]
+    //public string toAddress;
 
     [Space]
     public InputField signUpPW;
@@ -56,6 +56,12 @@ public class AccountManager : MonoBehaviour
     public InputField submitPWText;
     public Text missingText;
 
+    public string toAddress;
+    public int transferAmount;
+
+    private Account account;
+    private Web3 web3;
+
     private static RubiTokenWrapper tokenContractService;
 
     private void Awake()
@@ -70,58 +76,65 @@ public class AccountManager : MonoBehaviour
         tokenContractService = new RubiTokenWrapper();
     }
 
-    [Function("transfer", "bool")]
-    public class TransferFunction : FunctionMessage
+    public void GetTokenTransfer()
     {
-        [Parameter("address", "recipient", 1)]
-        public string To { get; set; }
+        tokenContractService.toAddress = toAddress;
+        tokenContractService.transferAmount = transferAmount;
 
-        [Parameter("uint256", "amount", 2)]
-        public BigInteger TokenAmount { get; set; }
-    }
-
-    [Event("Transfer")]
-    public class TransferEventDTO : IEventDTO
-    {
-        [Parameter("address", "_from", 1, true)]
-        public string From { get; set; }
-
-        [Parameter("address", "_to", 2, true)]
-        public string To { get; set; }
-
-        [Parameter("uint256", "_value", 3, false)]
-        public BigInteger Value { get; set; }
-    }
-
-    public async void GetTokenTransfer()
-    {
-        var account = new Account("BE1EEA742C92A0F3179487744154575561ECF63B01315D9F043B684F06DE2817");
-        var web3 = new Web3(account, WalletManager.Instance.URL);
-        var transferHandler = web3.Eth.GetContractTransactionHandler<TransferFunction>();
-
-        var transfer = new TransferFunction()
-        {
-            To = toAddress,
-            TokenAmount = UnitConversion.Convert.ToWei(transferAmount)
-        };
-
-        var transactionReceipt2 = await transferHandler.SendRequestAndWaitForReceiptAsync(tokenContractService.contract.Address, transfer);
-        var transferEventOutput = transactionReceipt2.DecodeAllEvents<TransferEventDTO>();
-        var transferEventHandler = web3.Eth.GetEvent<TransferEventDTO>(tokenContractService.contract.Address);
-        var filterAllTransferEventsForContract = transferEventHandler.CreateFilterInput();
-        var allTransferEventsForContract = await transferEventHandler.GetAllChanges(filterAllTransferEventsForContract);
-        Debug.Log("Transfer event TransactionHash : " + allTransferEventsForContract[0].Log.TransactionHash);
-
-
-        //var gas = await tokenContractService.GetFunctionTransfer().EstimateGasAsync(WalletManager.Instance.publicAddress, null, null, toAddress, transferAmount);
-        //Debug.Log(WalletManager.Instance.publicAddress + "" + toAddress);
-        //var receiptAmountSend = await tokenContractService.GetFunctionTransfer().SendTransactionAndWaitForReceiptAsync(WalletManager.Instance.publicAddress, gas, null, null, toAddress, transferAmount);
+        tokenContractService.Transfer();
     }
 
     public async void GetTokenBalanceOf()
     {
         var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
         Debug.Log("Balance : " + balance);
+    }
+
+    public void CreateAccount()
+    {
+        if (signUpPW.text.Length > 7)
+        {
+            password = signUpPW.text;
+            WalletManager.Instance.CreateAccount(password);
+
+            seedPanel.SetActive(true);
+            seedText.text = WalletManager.Instance.mnemo.ToString();
+
+            IsEncryptedJson();
+
+            Debug.Log("Address:" + WalletManager.Instance.publicAddress);
+            Debug.Log("PrivateKey:" + WalletManager.Instance.privateKey);
+            Debug.Log("Json:" + WalletManager.Instance.encryptedJson);
+            Debug.Log("Password:" + WalletManager.Instance.password);
+
+            password = null;
+            //UIFunction();
+        }
+    }
+
+    public void ImportAccountFromJson()
+    {
+        if (signInPW.text.Length > 7)
+        {
+            password = signInPW.text;
+            WalletManager.Instance.ImportAccountFromJson(password, json);
+            if (WalletManager.Instance.privateKey != null)
+            {
+                account = new Account(WalletManager.Instance.privateKey);
+                web3 = new Web3(account, WalletManager.Instance.URL);
+
+                //SceneManager.LoadScene("MyRoom");
+            }
+
+            Debug.Log("Address:" + WalletManager.Instance.publicAddress);
+            Debug.Log("PrivateKey:" + WalletManager.Instance.privateKey);
+            Debug.Log("Json:" + WalletManager.Instance.encryptedJson);
+            Debug.Log("Password:" + WalletManager.Instance.password);
+        }
+        else
+        {
+            passwordNotice.enabled = true;
+        }
     }
 
     public void IsEncryptedJson()
@@ -142,50 +155,12 @@ public class AccountManager : MonoBehaviour
         }
     }
 
-    private void CreateDefaultAccount()
-    {
-        if (WalletManager.Instance.publicAddress == "")
-            ImportAccountFromPrivateKey();
-    }
-
-    public void CreateAccount()
-    {
-        if(signUpPW.text.Length > 7)
-        {
-            password = signUpPW.text;
-            WalletManager.Instance.CreateAccount(password);
-
-            seedPanel.SetActive(true);
-            seedText.text = WalletManager.Instance.mnemo.ToString();
-
-            IsEncryptedJson();
-
-            Debug.Log("Address:" + WalletManager.Instance.publicAddress);
-            Debug.Log("PrivateKey:" + WalletManager.Instance.privateKey);
-            Debug.Log("Json:" + WalletManager.Instance.encryptedJson);
-            Debug.Log("Password:" + WalletManager.Instance.password);
-
-            password = null;
-            //UIFunction();
-        }
-    }
-
-    public void CopySeedBt()
-    {
-        UniClipboard.SetText(seedText.text);
-        SceneManager.LoadScene(0);
-    }
-
-    public void ForgotPassword()
-    {
-        forgotPanel.SetActive(true);
-    }
-
     public void SubmitSeed()
     {
         if (submitSeedText.text != null && submitPWText.text.Length > 7)
         {
-            try {
+            try
+            {
                 string seedWord = submitSeedText.text;
                 string password = submitPWText.text;
 
@@ -207,76 +182,71 @@ public class AccountManager : MonoBehaviour
         }
     }
 
+    public void CopySeedBt()
+    {
+        UniClipboard.SetText(seedText.text);
+        SceneManager.LoadScene(0);
+    }
+
+    public void ForgotPassword()
+    {
+        forgotPanel.SetActive(true);
+    }
+
     public void CancleForgotPanel()
     {
         forgotPanel.SetActive(false);
     }
 
-    // password와 encryptedjson으로 로그인
-    public void ImportAccountFromJson()
-    {
-        if(signInPW.text.Length > 7)
-        {
-            password = signInPW.text;
-            WalletManager.Instance.ImportAccountFromJson(password, json);
-            if (WalletManager.Instance.isLogin)
-            {
-                //SceneManager.LoadScene("MyRoom");
-            }
+    //private void CreateDefaultAccount()
+    //{
+    //    if (WalletManager.Instance.publicAddress == "")
+    //        ImportAccountFromPrivateKey();
+    //}
 
-            Debug.Log("Address:" + WalletManager.Instance.publicAddress);
-            Debug.Log("PrivateKey:" + WalletManager.Instance.privateKey);
-            Debug.Log("Json:" + WalletManager.Instance.encryptedJson);
-            Debug.Log("Password:" + WalletManager.Instance.password);
-        }
-        else
-        {
-            passwordNotice.enabled = true;
-        }
-    }
+    //public void ImportAccountFromPrivateKey()
+    //{
+    //    WalletManager.Instance.ImportAccountFromPrivateKey(privateKey);
 
-    public void ImportAccountFromPrivateKey()
-    {
-        WalletManager.Instance.ImportAccountFromPrivateKey(privateKey);
+    //    Debug.Log("Address:" + WalletManager.Instance.publicAddress);
+    //    Debug.Log("PrivateKey:" + WalletManager.Instance.privateKey);
+    //}
 
-        Debug.Log("Address:" + WalletManager.Instance.publicAddress);
-        Debug.Log("PrivateKey:" + WalletManager.Instance.privateKey);
-    }
+    //public void TransferWego()
+    //{
+    //    CreateDefaultAccount();
 
-    public void TransferWego()
-    {
-        CreateDefaultAccount();
+    //    HexBigInteger gas = new HexBigInteger(new BigInteger(this.gas));
+    //    HexBigInteger gasPrice = new HexBigInteger(UnitConversion.Convert.ToWei(this.gasPrice, UnitConversion.EthUnit.Gwei));
+    //    HexBigInteger value = new HexBigInteger(UnitConversion.Convert.ToWei(transferAmount));
 
-        HexBigInteger gas = new HexBigInteger(new BigInteger(this.gas));
-        HexBigInteger gasPrice = new HexBigInteger(UnitConversion.Convert.ToWei(this.gasPrice, UnitConversion.EthUnit.Gwei));
-        HexBigInteger value = new HexBigInteger(UnitConversion.Convert.ToWei(transferAmount));
+    //    TransactionInput input = WalletManager.Instance.GetTransferEtherInput(null, toAddress,
+    //            gas, gasPrice, value);
 
-        TransactionInput input = WalletManager.Instance.GetTransferEtherInput(null, toAddress,
-                gas, gasPrice, value);
+    //    StartCoroutine(WalletManager.Instance.SignTransaction(input, (UnityRequest<string> result) =>
+    //    {
+    //        if (result.Exception == null)
+    //        {
+    //            Debug.Log(result.Result);
+    //            OpenWegoscan(result.Result);
+    //        }
+    //        else
+    //        {
+    //            throw new System.InvalidOperationException("Transfer failed");
+    //        }
+    //    }));
+    //}
 
-        StartCoroutine(WalletManager.Instance.SignTransaction(input, (UnityRequest<string> result) =>
-        {
-            if (result.Exception == null)
-            {
-                Debug.Log(result.Result);
-                OpenWegoscan(result.Result);
-            }
-            else
-            {
-                throw new System.InvalidOperationException("Transfer failed");
-            }
-        }));
-    }
+    //private void OpenWegoscan(string result)
+    //{
+    //    if (WalletManager.Instance.URL.Contains("7766"))
+    //    {
+    //        // tx.text = "Tx:" + result;
+    //        string Wegoscan = "http://125.133.75.165:8083/blocks/0/txnList/";
+    //        Application.OpenURL(Wegoscan + result);
+    //    }
+    //}
 
-    private void OpenWegoscan(string result)
-    {
-        if (WalletManager.Instance.URL.Contains("7766"))
-        {
-            // tx.text = "Tx:" + result;
-            string Wegoscan = "http://125.133.75.165:8083/blocks/0/txnList/";
-            Application.OpenURL(Wegoscan + result);
-        }
-    }
     //public void DeployContact()
     //{
     //    CreateDefaultAccount();

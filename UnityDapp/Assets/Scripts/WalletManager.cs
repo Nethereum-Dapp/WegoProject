@@ -25,9 +25,7 @@ public class WalletManager : MonoBehaviour
     public string password;
     public string encryptedJson;
     public string jsonPath;
-    public bool isLogin = false;
     public Mnemonic mnemo;
-    public Account account;
 
     public void Awake()
     {
@@ -46,9 +44,8 @@ public class WalletManager : MonoBehaviour
     {
         mnemo = new Mnemonic(Wordlist.English, WordCount.Twelve);
         var wallet = new Wallet(mnemo.ToString(), "rubidium");
-        account = wallet.GetAccount(0);
+        var account = wallet.GetAccount(0);
         var address = account.Address;
-        var privateKey = account.PrivateKey;
 
         EncryptedJson(password, wallet.GetPrivateKey(0), address);
 
@@ -72,7 +69,6 @@ public class WalletManager : MonoBehaviour
             var keystoreservice = new Nethereum.KeyStore.KeyStoreService();
             var privateKey = keystoreservice.DecryptKeyStoreFromJson(password, encryptedJson);
             var address = keystoreservice.GetAddressFromKeyStore(encryptedJson);
-            isLogin = true;
 
             this.password = password;
             this.publicAddress = address;
@@ -83,7 +79,6 @@ public class WalletManager : MonoBehaviour
         {
             Debug.Log("DecryptionException");
             FindObjectOfType<AccountManager>().passwordNotice.enabled = true;
-            isLogin = false;
             return;
         }
     }

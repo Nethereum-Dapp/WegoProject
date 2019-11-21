@@ -2891,7 +2891,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1075555402}
   - component: {fileID: 1075555405}
-  - component: {fileID: 1075555404}
   - component: {fileID: 1075555403}
   m_Layer: 0
   m_Name: LoginManager
@@ -2932,22 +2931,6 @@ MonoBehaviour:
   password: 
   encryptedJson: 
   jsonPath: C:\developer.yhl\Wego_Project\WegoProject\.secret.json
-  isLogin: 0
---- !u!114 &1075555404
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1075555401}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9329e35cc5429bd48bbba278fec06161, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ABI: 
-  Bytecode: 
-  contractAddress: 
 --- !u!114 &1075555405
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2962,11 +2945,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   json: 
   password: 
-  privateKey: 
-  gas: 3000000
-  gasPrice: 2
-  transferAmount: 0
-  toAddress: 0xcEF6BEf33f86260e4f40b3feE889A98Ca6AE825B
   signUpPW: {fileID: 1380121648}
   signInPW: {fileID: 1253776291}
   passwordNotice: {fileID: 60027278}
@@ -2976,6 +2954,8 @@ MonoBehaviour:
   submitSeedText: {fileID: 2031018719}
   submitPWText: {fileID: 184948398}
   missingText: {fileID: 1067577124}
+  toAddress: 
+  transferAmount: 0
 --- !u!1 &1199614695
 GameObject:
   m_ObjectHideFlags: 0
