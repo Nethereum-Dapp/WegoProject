@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Login.unity
+    path: Assets/YongHwan/Scenes/Login.unity
     guid: e90580befda0274459fdad4ac9c2894b
   - enabled: 1
     path: Assets/Scenes/MyRoom.unity
