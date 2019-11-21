@@ -26,6 +26,7 @@ public class AccountManager : MonoBehaviour
     [Space]
     public string json;
     public string password;
+
     //public string privateKey;
 
     //[Space]
