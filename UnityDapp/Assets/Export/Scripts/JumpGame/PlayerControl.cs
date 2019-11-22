@@ -99,8 +99,11 @@ public class PlayerControl : MonoBehaviour
     {
         if (!gameOver)
         {
-            time -= Time.deltaTime;
-            timeText.text = time.ToString("N0");
+            if (!isBurning)
+            {
+                time -= Time.deltaTime;
+                timeText.text = time.ToString("N0");
+            }
 
             score += Time.deltaTime;
             scoreText.text = "Score : " + score.ToString("N0");
@@ -197,44 +200,46 @@ public class PlayerControl : MonoBehaviour
     {
         if (collision.gameObject.tag == "Ruby")
         {
-            rubyScore ++;
-            rubyScoreText.text = " : " + rubyScore;
-            collision.gameObject.SetActive(false);
-            score += 100;
-            anim.SetTrigger("Jump");
-
-            if (!isBurning)
+            if (collision.gameObject.GetComponent<SpriteRenderer>().enabled)
             {
-                burningBar_EnergyField.fillAmount += 0.5f;
+                rubyScore++;
+                rubyScoreText.text = " : " + rubyScore;
+                score += 100;
+                scoreText.text = "Score : " + score.ToString("N0");
+                anim.SetTrigger("Jump");
+                ruby_SFX.Play();
+                collision.gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                //Debug.Log("false");
+
+                if (!isBurning)
+                {
+                    burningBar_EnergyField.fillAmount += 0.5f;
+                }
+
+                if (burningBar_EnergyField.fillAmount == 1.0f)
+                {
+                    isBurning = true;
+
+                    idleBGM.Stop();
+                    buringBGM.Play();
+
+                    if (isBurning)
+                    {
+                        burningBar_EnergyField.fillAmount = 1.0f;
+
+                        ISBurningTrue();
+                        StartCoroutine(ISBurningFalse());
+                    }
+                }
             }
-            
-            scoreText.text = "Score : " + score.ToString("N0");
-            ruby_SFX.Play();
         }
-
-        if (burningBar_EnergyField.fillAmount == 1.0f)
-        {
-            isBurning = true;
-
-            idleBGM.Stop();
-            buringBGM.Play();
-
-            if (isBurning)
-            {
-                burningBar_EnergyField.fillAmount = 1.0f;
-
-                ISBurningTrue();
-                StartCoroutine(ISBurningFalse());
-            }
-        }
-
     }
 
     private void ISBurningTrue()
     {
-        scroll.burningSpeed *= 5.0f;
+        scroll.burningSpeed += 2.0f;
 
-        if (scroll.burningSpeed >= 100)
+        if (scroll.burningSpeed >= 10)
         {
             scroll.burningSpeed = 10f;
         }
@@ -248,11 +253,11 @@ public class PlayerControl : MonoBehaviour
         rd2.isKinematic = true;
         burningBG.SetActive(true);
         burningBG.transform.position = new Vector3(0, 0, 1);
-        burningBG.gameObject.GetComponent<Scroll>().burningSpeed *= 5.0f;
+        burningBG.gameObject.GetComponent<Scroll>().burningSpeed += 5.0f;
 
         if(burningBG.gameObject.GetComponent<Scroll>().burningSpeed >= 20.0f)
         {
-            burningBG.gameObject.GetComponent<Scroll>().burningSpeed = 20.0f;
+            burningBG.gameObject.GetComponent<Scroll>().burningSpeed = 15.0f;
         }
 
         burningFullImage.enabled = true;
@@ -297,7 +302,7 @@ public class PlayerControl : MonoBehaviour
     // Replay
     public void ReplayGame()
     {
-        SceneManager.LoadScene("JumpGame");
+        SceneManager.LoadScene("Main");
     }
 
 

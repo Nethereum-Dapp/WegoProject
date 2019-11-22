@@ -36,13 +36,16 @@ public class GM : MonoBehaviour
 
     [SerializeField]
     private float r; // 원의 반지름
-    private float degree; // Field의 원주에서 랜덤하게 생성할 장애물의 각도
+
+    public float degree; // Field의 원주에서 랜덤하게 생성할 장애물의 각도
 
     [SerializeField]
     private float term; // 몇 초에 한 번씩 장애물을 생성할지 결정할 변수 (기준점)
     private float currentTime; // 현재 시간을 받아올 변수
 
     Player _player; // player script를 사용하기 위한 player형 변수
+
+    int lightningCount; // lightning clone level count
 
     void Awake()
     {
@@ -61,7 +64,7 @@ public class GM : MonoBehaviour
 
         startText.text = "Click !!";
 
-        InvokeRepeating("GenerateRuby", 10, 10);
+        //InvokeRepeating("GenerateRuby(1)", 10, 10);
 
         _player = FindObjectOfType<Player>();
     }
@@ -71,28 +74,35 @@ public class GM : MonoBehaviour
     {
         if (!isGameOver)
         {
-            time -= Time.deltaTime;
-            timeText.text = time.ToString("N0");
-
-            degree = Random.Range(0, 360f);
-
-            currentTime += Time.deltaTime;
-
-            if (currentTime > term)
+            if(!_player.isBurning)
             {
-                currentTime = 0.0f;
-                GenerateLightning();
-            }
+                time -= Time.deltaTime;
+                timeText.text = time.ToString("N0");
 
+                degree = Random.Range(0, 360f);
+
+                currentTime += Time.deltaTime;
+
+                lightningCount = Random.Range(1, 3);
+
+                if (currentTime > term)
+                {
+                    currentTime = 0.0f;
+                    GenerateLightning(lightningCount);
+                }
+            }
         }
         else
         {
-            if (Input.GetMouseButtonDown(0))
+            if(gameOverText.activeSelf == false)
             {
-                startText.text = "GameStart !!";
-                StartCoroutine(GameStartText());
+                if (Input.GetMouseButtonDown(0))
+                {
+                    startText.text = "GameStart !!";
+                    StartCoroutine(GameStartText());
+                }
+                else return; // GameOver
             }
-
         }
         if (time <= 0)
         {
@@ -113,26 +123,35 @@ public class GM : MonoBehaviour
     }
    
     // 장애물 instantiate
-    private void GenerateLightning ()
+    public void GenerateLightning (int count)
     {
-        lightning_list.Add(Instantiate(lightning, new Vector3(r * Cos(degree), r * Sin(degree)), Quaternion.identity));
-        lightning_list.Last().transform.SetParent(lightningClones.transform);
+        for (int i = 0; i < count; i++)
+        {
+            degree = Random.Range(0, 360f);
+            lightning_list.Add(Instantiate(lightning, new Vector3(r * Cos(degree), r * Sin(degree)), Quaternion.identity));
+            lightning_list.Last().transform.SetParent(lightningClones.transform);
+        }
         
     }
 
-    private void GenerateRuby ()
+    public void GenerateRuby (int count = 1)
     {
         float _r;
         _r = Random.Range(0, 3f);
-        GameObject ru_go = Instantiate(ruby, new Vector3(_r * Cos(degree), _r * Sin(degree)), Quaternion.identity);
-        Destroy(ru_go, 10f);
+
+        for (int i = 0; i < count; i++)
+        {
+            degree = Random.Range(0, 360f);
+            GameObject ru_go = Instantiate(ruby, new Vector3(_r * Cos(degree), _r * Sin(degree)), Quaternion.identity);
+            Destroy(ru_go, 10f);
+        }
     }
 
 
     // 리플레이 함수
     public void ReStart ()
     {
-        SceneManager.LoadScene("LightningGame");
+        SceneManager.LoadScene("Main");
     }
 
 }

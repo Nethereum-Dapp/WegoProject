@@ -31,7 +31,16 @@ public class Player : MonoBehaviour
     private Text highScoreText; // highScoreText UI
     private float highScore; // high score를 담을 변수
 
+    public Image burningBar; // 버닝 에너지바
+
+    public Image burningFullBar; // 버닝모드일때의 에너지바
+
+    public bool isBurning; // 버닝모드 검사
+
     Animator anim;
+
+    public AudioSource audio_Idle;
+    public AudioSource audio_Burning;
 
     // Start is called before the first frame update
     void Start()
@@ -40,9 +49,16 @@ public class Player : MonoBehaviour
         ruby_SFX = GetComponent<AudioSource>();
         anim = GetComponent<Animator>();
 
+        burningBar.enabled = true;
+        burningFullBar.enabled = false;
+
         rubyScore = 0;
         hp.fillAmount = 1;
+        burningBar.fillAmount = 0.05f;
         score = 0;
+
+        audio_Idle = gm.GetComponent<AudioSource>();
+
     }
 
     // Update is called once per frame
@@ -54,8 +70,46 @@ public class Player : MonoBehaviour
             currentPosition = transform.position;
             score += Time.deltaTime;
             scoreText.text = "Score : " + score.ToString("N0");
+            if (!isBurning)
+            {
+                burningBar.fillAmount += 0.1f * Time.deltaTime;
+                if(burningBar.fillAmount >= 1)
+                {
+                    burningFullBar.enabled = true;
+                    burningBar.fillAmount = 0.05f;
+                    burningBar.enabled = false;
+
+                    StartCoroutine(Burning());
+                }
+            } 
         }
     }
+
+    IEnumerator Burning()
+    {
+        isBurning = true;
+        audio_Idle.Stop();
+        audio_Burning.Play();
+
+        gm.GenerateRuby(2);
+        
+        yield return new WaitForSeconds(1f);
+        gm.GenerateRuby(3);
+
+        yield return new WaitForSeconds(2f);
+        gm.GenerateRuby(3);
+
+        yield return new WaitForSeconds(1f);
+        gm.GenerateRuby(3);
+
+        yield return new WaitForSeconds(3f);
+        isBurning = false;
+        burningFullBar.enabled = false;
+        burningBar.enabled = true;
+        audio_Idle.Play();
+        audio_Burning.Stop();
+    }
+
 
     // 플레이어 이동 함수 및 이동 제한 범위 설정
     private void PlayerController()
@@ -77,26 +131,40 @@ public class Player : MonoBehaviour
     // 플레이어 충돌체크
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Lightning" || collision.gameObject.tag == "_Lightning")
+        if (collision.gameObject.tag == "Lightning" && !isBurning)
         {
-            hp.fillAmount -= 0.05f;
-            hurt_SFX.Play();
-            anim.SetTrigger("Hurt");
-
-            if (hp.fillAmount <= 0)
+            if(!isBurning)
             {
-                gm.isGameOver = true;
-                gm.gameOverText.SetActive(true);
-                HighScoreSave();
+                hp.fillAmount -= 0.05f;
+                burningBar.fillAmount -= 0.05f;
+                hurt_SFX.Play();
+                anim.SetTrigger("Hurt");
+
+                if (hp.fillAmount <= 0)
+                {
+                    gm.isGameOver = true;
+                    gm.gameOverText.SetActive(true);
+                    HighScoreSave();
+                }
+            } else
+            {
+                Destroy(collision.gameObject);
             }
+           
         }
 
         if (collision.gameObject.tag == "Ruby")
         {
             rubyScore++;
-            rubyScoreText.text = " : " + rubyScore;
+            rubyScoreText.text = " : " + rubyScore.ToString("N0");
             score += 150;
             ruby_SFX.Play();
+            anim.SetTrigger("Jump");
+
+            if (!isBurning)
+            {
+                burningBar.fillAmount += 0.1f;
+            } 
 
             for (int i = 0; i < gm.lightning_list.Count; i++)
             {

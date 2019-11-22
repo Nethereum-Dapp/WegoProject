@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Scroll : MonoBehaviour
 {
@@ -32,12 +33,24 @@ public class Scroll : MonoBehaviour
 
             if (gameObject.tag == "Ground" || gameObject.tag == "Ruby")
             {
-                Ruby.SetActive(true);
-
                 randomSpeed = Random.Range(2.0f, 6.0f);
 
                 gameObject.SendMessage("ChangeLocation", SendMessageOptions.DontRequireReceiver);
             }
+
+            if(gameObject.tag == "Ruby")
+            {
+                if (Ruby.gameObject.GetComponent<SpriteRenderer>().enabled == false)
+                {
+                    Ruby.gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                    //Debug.Log(Ruby.gameObject.GetComponent<SpriteRenderer>().enabled);
+                    randomSpeed = Random.Range(2.0f, 6.0f);
+
+                    gameObject.SendMessage("ChangeLocation", SendMessageOptions.DontRequireReceiver);
+                }
+            }
+           
+
         }
     }
 }

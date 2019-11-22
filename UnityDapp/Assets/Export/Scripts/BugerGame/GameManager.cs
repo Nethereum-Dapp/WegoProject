@@ -70,6 +70,10 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private AudioSource idleBGM; // 평상시 게임시 나오는 배경음
 
+    [SerializeField]
+    private Text rubyTextUI; // 얻은 루비 갯수를 나타내는 UI
+    private float rubyText; // 루비의 갯수
+
     void Awake()
     {
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
@@ -84,6 +88,8 @@ public class GameManager : MonoBehaviour
         GameOverImg.SetActive(false);
 
         burningBar_EnergyField.fillAmount = 0.05f;
+
+        rubyText = 0f;
 
         isBurning = false;
 
@@ -108,11 +114,14 @@ public class GameManager : MonoBehaviour
         if (!gameOver)
         {
             PlayerCursor();
-            time -= Time.deltaTime;
 
-            //timeText.text = "" + Mathf.Round(time);
-            timeText.text = time.ToString("N0");
-
+            if(!isBurning)
+            {
+                time -= Time.deltaTime;
+                //timeText.text = "" + Mathf.Round(time);
+                timeText.text = time.ToString("N0");
+            }
+            
             if (burningBar_EnergyField.fillAmount >= 1.0f)
             {
                 isBurning = true;
@@ -176,6 +185,8 @@ public class GameManager : MonoBehaviour
         {
             bugerSFX.Play();
             score += 100;
+            rubyText++;
+            rubyTextUI.text = " : " + rubyText;
             scoreText.text = "Score : " + score;
             burningBar_EnergyField.fillAmount += 0.5f;
             DestroyBuger();
@@ -294,7 +305,9 @@ public class GameManager : MonoBehaviour
             if(isBurning)
             {
                 DestroyBuger();
-                score += 10;
+                score += 100;
+                rubyText++;
+                rubyTextUI.text = " : " + rubyText;
                 scoreText.text = "Score : " + score;
                 bugerSFX.Play();
 
@@ -341,7 +354,7 @@ public class GameManager : MonoBehaviour
 
     public void GameOver ()
     {
-        SceneManager.LoadScene("BugerGame");
+        SceneManager.LoadScene("Main");
     }
 
 
