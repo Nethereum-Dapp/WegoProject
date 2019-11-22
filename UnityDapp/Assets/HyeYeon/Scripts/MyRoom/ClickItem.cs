@@ -50,7 +50,7 @@ public class ClickItem : MonoBehaviour
         inputCount.characterLimit = 3;
         warningText.SetActive(false);
 
-        rubyCoin = await AccountManager.Instance.GetTokenBalanceOf();
+        rubyCoin = 10000;//await AccountManager.Instance.GetTokenBalanceOf();
         rubyCoinUI.text = " : " + rubyCoin;
     }
 
@@ -72,12 +72,13 @@ public class ClickItem : MonoBehaviour
             {
                 if(rubyCoin - hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost >= 0)
                 {
-                    AccountManager.Instance.TokenTransferMaster(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost);
+                    //AccountManager.Instance.TokenTransferMaster(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost);
+                    rubyCoin -= hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost;
                     myItemClones = Instantiate(hit.collider.gameObject, myContents.transform.position, Quaternion.identity);
                     myItemClones.transform.SetParent(myContents.transform, false);
                     myItemClones.GetComponent<BoxCollider2D>().enabled = false;
 
-                    rubyCoin = await AccountManager.Instance.GetTokenBalanceOf();
+                    //rubyCoin = await AccountManager.Instance.GetTokenBalanceOf();
                     rubyCoinUI.text = " : " + rubyCoin;
                 } else
                 {
