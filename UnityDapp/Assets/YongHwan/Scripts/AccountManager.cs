@@ -77,6 +77,22 @@ public class AccountManager : MonoBehaviour
         tokenContractService = new RubiTokenWrapper();
     }
 
+    public void ReceiveTokenTransfer(int amount)
+    {
+        tokenContractService.toAddress = WalletManager.Instance.publicAddress;
+        tokenContractService.transferAmount = amount;
+
+        tokenContractService.ReceiveTransfer();
+    }
+
+    public async Task<int> GetTokenBalanceOf()
+    {
+        int balance = (int)UnitConversion.Convert.FromWei(await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress));
+        Debug.Log("Balance : " + balance);
+
+        return balance;
+    }
+
     public void GetTokenTransfer()
     {
         tokenContractService.toAddress = toAddress;
@@ -85,10 +101,9 @@ public class AccountManager : MonoBehaviour
         tokenContractService.Transfer();
     }
 
-    public async void GetTokenBalanceOf()
+    public void TokenTransferMaster(int amount)
     {
-        var balance = await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress);
-        Debug.Log("Balance : " + balance);
+        tokenContractService.TransferMaster(amount);
     }
 
     public void CreateAccount()
@@ -124,7 +139,7 @@ public class AccountManager : MonoBehaviour
                 account = new Account(WalletManager.Instance.privateKey);
                 web3 = new Web3(account, WalletManager.Instance.URL);
 
-                //SceneManager.LoadScene("MyRoom");
+                SceneManager.LoadScene("Main");
             }
 
             Debug.Log("Address:" + WalletManager.Instance.publicAddress);

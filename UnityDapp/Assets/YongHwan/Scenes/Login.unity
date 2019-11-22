@@ -2759,7 +2759,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1075555405}
-        m_MethodName: GetTokenTransfer
+        m_MethodName: ImportAccountFromJson
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
