@@ -66,7 +66,7 @@ public class ClickItem : MonoBehaviour
    // 아이템 다중 일때 슬롯에 개수 보이도록 수정하기 
     private void PurchaseItem()
     {
-        if (Input.GetMouseButtonDown(1) && countMessage.activeSelf == false)
+        if (Input.GetMouseButtonDown(1))
         {
             if (hit.collider != null)
             {
@@ -85,8 +85,6 @@ public class ClickItem : MonoBehaviour
                         SlotList.instance.itemList.Add(myItemClones);
                     }
 
-                    ItemCountCheck(myItemClones);
-
                     //rubyCoin = await AccountManager.Instance.GetTokenBalanceOf();
                     rubyCoinUI.text = " : " + rubyCoin;
                 } else
@@ -99,9 +97,11 @@ public class ClickItem : MonoBehaviour
 
         if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(1))
         {
-            countMessage.SetActive(true);
+            
             if (hit.collider != null)
             {
+
+                countMessage.SetActive(true);
                 rubyCoin += hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost;
                 multiplePrice = hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost;
                 multipleItem = hit.collider.gameObject;
@@ -171,6 +171,7 @@ public class ClickItem : MonoBehaviour
         {
             item.GetComponent<Tooltip>().countBG.SetActive(true);
             item.GetComponent<Tooltip>().itemCountUI.text = "" + item.GetComponent<Tooltip>().itemCount;
+            Debug.Log(item.GetComponent<Tooltip>().itemCountUI.text);
         }
     }
 }

@@ -8,6 +8,8 @@ public class SlotList : MonoBehaviour
 
     public static SlotList instance;
 
+    ClickItem item;
+
     public bool addItem;
 
     private void Awake()
@@ -26,6 +28,7 @@ public class SlotList : MonoBehaviour
     void Start()
     {
         addItem = false;
+        item = FindObjectOfType<ClickItem>();
         // 저장된 list 가져오는 부분
     }
 
@@ -51,9 +54,11 @@ public class SlotList : MonoBehaviour
             {
                 itemList[i].GetComponent<Item>().ItemInfo.itemCount += count;
                 Debug.Log(itemList[i].GetComponent<Item>().ItemInfo.itemCount);
+                item.ItemCountCheck(itemList[i]);
                 return;
             }
         }
         addItem = true;
+        
     }
 }
