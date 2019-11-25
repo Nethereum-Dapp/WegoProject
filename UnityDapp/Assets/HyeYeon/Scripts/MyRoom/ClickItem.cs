@@ -70,7 +70,18 @@ public class ClickItem : MonoBehaviour
         {
             if (hit.collider != null)
             {
-                if(rubyCoin - hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost >= 0)
+                if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(1))
+                {
+                    countMessage.SetActive(true);
+                    //rubyCoin += hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost;
+                    multiplePrice = hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost;
+                    multipleItem = hit.collider.gameObject;
+
+                    buttonText.text = "'" + hit.collider.gameObject.name + "' 아이템 구매?";
+                    return;
+                }
+
+                if (rubyCoin - hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost >= 0)
                 {
                     //AccountManager.Instance.TokenTransferMaster(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost);
                     rubyCoin -= hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost;
@@ -95,21 +106,7 @@ public class ClickItem : MonoBehaviour
             }
         }
 
-        if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(1))
-        {
-            
-            if (hit.collider != null)
-            {
-
-                countMessage.SetActive(true);
-                rubyCoin += hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost;
-                multiplePrice = hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost;
-                multipleItem = hit.collider.gameObject;
-                
-                buttonText.text = "'" + hit.collider.gameObject.name + "' 아이템 구매?";
-            }
-        }
-
+        
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             countMessage.SetActive(false);
@@ -121,7 +118,7 @@ public class ClickItem : MonoBehaviour
         if (inputCount.text != null && rubyCoin >=0)
         {
             int _count;
-            _count = int.Parse(inputCount.text) - 1;
+            _count = int.Parse(inputCount.text);
 
             if(_count <1)
             {
@@ -134,7 +131,8 @@ public class ClickItem : MonoBehaviour
             if(rubyCoin - multiplePrice * _count >= 0)
             {
                 rubyCoin -= multiplePrice * _count;
-               
+                rubyCoinUI.text = " : " + rubyCoin;
+
                 SlotList.instance.ItemSave(multipleItem, multipleItem.GetComponent<Item>().ItemInfo.itemName, _count);
 
                 if (SlotList.instance.addItem)
