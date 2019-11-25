@@ -12,6 +12,10 @@ public class Tooltip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     private Text toolTipTextUI; // 툴팁 설명 UI
     private string toolTipTextString; // 툴팁 설명 글
 
+    public GameObject countBG; // 아이템 갯수
+    public Text itemCountUI; // 아이템 갯수 UI
+    public int itemCount; // 아이템 갯수 
+
     private Item item;
 
     Vector2 MousPosition;
@@ -22,8 +26,16 @@ public class Tooltip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         toolTip.SetActive(false);
         item = gameObject.GetComponent<Item>();
-    }
 
+        itemCount = gameObject.GetComponent<Item>().ItemInfo.itemCount;
+
+        if (itemCount < 1)
+        {
+            countBG.SetActive(false);
+        }
+
+    }
+    
 
     public void OnPointerEnter(PointerEventData eventData)
     {

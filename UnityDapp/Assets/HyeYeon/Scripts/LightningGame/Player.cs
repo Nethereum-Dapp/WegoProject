@@ -121,9 +121,12 @@ public class Player : MonoBehaviour
 
         float distance = Vector3.Distance(new Vector3(0, 0, 0), nextPosition);
 
-        if (distance < 4.2)
+        if (distance < 4.5)
         {
             transform.position += new Vector3(horizontal * playerSpeed * Time.deltaTime, vertical * playerSpeed * Time.deltaTime);
+        } else
+        {
+            gameObject.transform.position = currentPosition;
         }
 
     }

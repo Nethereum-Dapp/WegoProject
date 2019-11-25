@@ -20,7 +20,7 @@ public class ClickItem : MonoBehaviour
     private GameObject myContents; // 구매한 내 아이템
 
     [SerializeField]
-    private GameObject warningText; // 돈이 부족할때 뜨는 메세지
+    private Text warningText; // 돈이 부족할때 뜨는 메세지
     [SerializeField]
     private Text buttonText; // 대량구매시 누르는 버튼의 text;
     [SerializeField]
@@ -48,9 +48,9 @@ public class ClickItem : MonoBehaviour
     {
         countMessage.SetActive(false);
         inputCount.characterLimit = 3;
-        warningText.SetActive(false);
+        warningText.enabled = false;
 
-        rubyCoin = await AccountManager.Instance.GetTokenBalanceOf();
+        rubyCoin = 10000;//await AccountManager.Instance.GetTokenBalanceOf();
         rubyCoinUI.text = " : " + rubyCoin;
     }
 
@@ -63,7 +63,7 @@ public class ClickItem : MonoBehaviour
         hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);
     }
 
-   // 아이템 다중 일때 슬롯에 개수 보이도록 수정하기 & Json 파일 형식으로 저장한 후 로드하기
+   // 아이템 다중 일때 슬롯에 개수 보이도록 수정하기 
     private async void PurchaseItem()
     {
         if (Input.GetMouseButtonDown(1))
@@ -74,16 +74,26 @@ public class ClickItem : MonoBehaviour
                 {
                     //AccountManager.Instance.TokenTransferMaster(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost);
                     //AccountManager.Instance.PurchaseItem(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemName, 1);
-                    AccountManager.Instance.UseItem(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemName, 1);
-                    myItemClones = Instantiate(hit.collider.gameObject, myContents.transform.position, Quaternion.identity);
-                    myItemClones.transform.SetParent(myContents.transform, false);
-                    myItemClones.GetComponent<BoxCollider2D>().enabled = false;
+                    //AccountManager.Instance.UseItem(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemName, 1);
+                    rubyCoin = await AccountManager.Instance.GetTokenBalanceOf() + 10000;
 
-                    rubyCoin = await AccountManager.Instance.GetTokenBalanceOf();
+                    rubyCoin -= hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost;
+                    
+                    SlotList.instance.ItemSave(hit.collider.gameObject, hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemName, 1);
+
+                    if (SlotList.instance.addItem)
+                    {
+                        myItemClones = Instantiate(hit.collider.gameObject, myContents.transform.position, Quaternion.identity);
+                        myItemClones.transform.SetParent(myContents.transform, false);
+                        myItemClones.GetComponent<BoxCollider2D>().enabled = false;
+                        SlotList.instance.itemList.Add(myItemClones);
+                    }
+
+                    //rubyCoin = await AccountManager.Instance.GetTokenBalanceOf();
                     rubyCoinUI.text = " : " + rubyCoin;
                 } else
                 {
-                    warningText.SetActive(true);
+                    warningText.enabled = true;
                     StartCoroutine(WarningTextFalse());
                 }
             }
@@ -93,11 +103,12 @@ public class ClickItem : MonoBehaviour
         {
             if (hit.collider != null)
             {
+
+                countMessage.SetActive(true);
                 rubyCoin += hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost;
-                Destroy(myItemClones);
                 multiplePrice = hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost;
                 multipleItem = hit.collider.gameObject;
-                countMessage.SetActive(true);
+                
                 buttonText.text = "'" + hit.collider.gameObject.name + "' 아이템 구매?";
             }
         }
@@ -113,19 +124,36 @@ public class ClickItem : MonoBehaviour
         if (inputCount.text != null && rubyCoin >=0)
         {
             int _count;
-            _count = int.Parse(inputCount.text);
+            _count = int.Parse(inputCount.text) - 1;
+
+            if(_count <1)
+            {
+                warningText.text = "1보다 큰 값을 입력해주세요";
+                warningText.enabled = true;
+                StartCoroutine(WarningTextFalse());
+                return;
+            }
+
             if(rubyCoin - multiplePrice * _count >= 0)
             {
                 rubyCoin -= multiplePrice * _count;
-                for (int i = 0; i < _count; i++)
+               
+                SlotList.instance.ItemSave(multipleItem, multipleItem.GetComponent<Item>().ItemInfo.itemName, _count);
+
+                if (SlotList.instance.addItem)
                 {
-                    GameObject myItemClones = Instantiate(multipleItem, myContents.transform.position, Quaternion.identity);
+                    myItemClones = Instantiate(multipleItem, myContents.transform.position, Quaternion.identity);
                     myItemClones.transform.SetParent(myContents.transform, false);
+                    myItemClones.GetComponent<BoxCollider2D>().enabled = false;
+                    SlotList.instance.itemList.Add(myItemClones);
                 }
+
+                ItemCountCheck(myItemClones);
+
                 countMessage.SetActive(false);
             } else
             {
-                warningText.SetActive(true);
+                warningText.enabled = true;
                 StartCoroutine(WarningTextFalse());
             }
         } 
@@ -134,7 +162,19 @@ public class ClickItem : MonoBehaviour
     IEnumerator WarningTextFalse()
     {
         yield return new WaitForSeconds(3f);
-        warningText.SetActive(false);
+        warningText.enabled = false;
+        warningText.text = "돈이 부족합니다.";
     }
 
+    public void ItemCountCheck(GameObject item)
+    {
+        item.GetComponent<Tooltip>().itemCount = item.GetComponent<Item>().ItemInfo.itemCount;
+
+        if (item.GetComponent<Tooltip>().itemCount >= 2)
+        {
+            item.GetComponent<Tooltip>().countBG.SetActive(true);
+            item.GetComponent<Tooltip>().itemCountUI.text = "" + item.GetComponent<Tooltip>().itemCount;
+            Debug.Log(item.GetComponent<Tooltip>().itemCountUI.text);
+        }
+    }
 }
