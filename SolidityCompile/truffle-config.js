@@ -77,7 +77,7 @@ module.exports = {
     }
   },
   rpc: {
-    port: 7766,
+      port: 7766,
     ip: "121.140.127.51"
   },
   // Set default mocha options here, use special reporters etc.
@@ -88,7 +88,7 @@ module.exports = {
   // Configure your compilers
   compilers: {
     solc: {
-      version: "0.4.21",    // Fetch exact version from solc-bin (default: truffle's version)
+      version: "0.4.23",    // Fetch exact version from solc-bin (default: truffle's version)
       // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
       // settings: {          // See the solidity docs for advice about optimization and evmVersion
       //  optimizer: {

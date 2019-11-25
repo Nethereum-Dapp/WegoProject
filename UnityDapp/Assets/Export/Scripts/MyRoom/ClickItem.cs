@@ -72,7 +72,9 @@ public class ClickItem : MonoBehaviour
             {
                 if(rubyCoin - hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost >= 0)
                 {
-                    AccountManager.Instance.TokenTransferMaster(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost);
+                    //AccountManager.Instance.TokenTransferMaster(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost);
+                    //AccountManager.Instance.PurchaseItem(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemName, 1);
+                    AccountManager.Instance.UseItem(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemName, 1);
                     myItemClones = Instantiate(hit.collider.gameObject, myContents.transform.position, Quaternion.identity);
                     myItemClones.transform.SetParent(myContents.transform, false);
                     myItemClones.GetComponent<BoxCollider2D>().enabled = false;
