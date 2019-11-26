@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7e61158098ec3ae4f84ac94d5e346689, type: 3}
-  m_Name: Ex1
+  m_Name: Ex3
   m_EditorClassIdentifier: 
-  itemName: 0
-  itemSprite: {fileID: 21300000, guid: 881f8e3bc93585c4c9a123ff5d882ae7, type: 3}
-  itemCost: 1
-  itemDesc: "\uAE30\uBCF8 HP \uBB3C\uC57D"
+  itemName: 2
+  itemSprite: {fileID: 21300000, guid: 375d151d96c9a7747b7e4ef6209fb912, type: 3}
+  itemCost: 500
+  itemDesc: "\uB3C5\uC57D"
+  itemCount: 0

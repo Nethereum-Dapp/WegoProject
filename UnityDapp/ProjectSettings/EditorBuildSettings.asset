@@ -9,18 +9,18 @@ EditorBuildSettings:
     path: Assets/YongHwan/Scenes/Login.unity
     guid: e90580befda0274459fdad4ac9c2894b
   - enabled: 1
-    path: Assets/Export/Scenes/MyRoom.unity
+    path: Assets/HyeYeon/Scenes/MyRoom.unity
     guid: ae5df68b714535845a4e06dd920448e0
   - enabled: 1
-    path: Assets/Export/Scenes/BugerGame.unity
+    path: Assets/HyeYeon/Scenes/BugerGame.unity
     guid: fbaf02c8eeee1cc4a989229a40e9a6de
   - enabled: 1
-    path: Assets/Export/Scenes/JumpGame.unity
+    path: Assets/HyeYeon/Scenes/JumpGame.unity
     guid: bbd18a0f120b3794baa5c4d56b98876c
   - enabled: 1
-    path: Assets/Export/Scenes/LightningGame.unity
+    path: Assets/HyeYeon/Scenes/LightningGame.unity
     guid: 2f9f2bb1ec505344a9fdc0480cd831c5
   - enabled: 1
-    path: Assets/Export/Scenes/Main.unity
+    path: Assets/HyeYeon/Scenes/Main.unity
     guid: 97e88d13ffc6efe41a76e0b23a6e3981
   m_configObjects: {}
