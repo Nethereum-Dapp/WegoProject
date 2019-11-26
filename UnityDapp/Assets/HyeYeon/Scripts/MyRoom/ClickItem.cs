@@ -2,6 +2,7 @@
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections;
+using System.Linq;
 
 public class ClickItem : MonoBehaviour
 {
@@ -37,6 +38,7 @@ public class ClickItem : MonoBehaviour
 
     bool flag = false;
 
+    // 화면고정
     void Awake()
     {
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
@@ -98,6 +100,7 @@ public class ClickItem : MonoBehaviour
                         myItemClones.transform.SetParent(myContents.transform, false);
                         myItemClones.GetComponent<BoxCollider2D>().enabled = false;
                         SlotList.instance.itemList.Add(myItemClones);
+                        SlotList.instance.itemList.Last().GetComponent<Item>().ItemInfo.itemCount++;
                     }
 
                     //rubyCoin = await AccountManager.Instance.GetTokenBalanceOf();
@@ -116,6 +119,7 @@ public class ClickItem : MonoBehaviour
         }
     }
     
+    // 다중 구매 버튼 클릭시 
     public void MultipleItemPurchase()
     {
         if (inputCount.text != null && rubyCoin >=0)
@@ -144,6 +148,7 @@ public class ClickItem : MonoBehaviour
                     myItemClones.transform.SetParent(myContents.transform, false);
                     myItemClones.GetComponent<BoxCollider2D>().enabled = false;
                     SlotList.instance.itemList.Add(myItemClones);
+                    SlotList.instance.itemList.Last().GetComponent<Item>().ItemInfo.itemCount += _count;
                 }
 
                 ItemCountCheck(myItemClones);
@@ -164,6 +169,7 @@ public class ClickItem : MonoBehaviour
         warningText.text = "돈이 부족합니다.";
     }
 
+    // 아이템 수량 체크
     public void ItemCountCheck(GameObject item)
     {
         item.GetComponent<Tooltip>().itemCount = item.GetComponent<Item>().ItemInfo.itemCount;
@@ -172,7 +178,6 @@ public class ClickItem : MonoBehaviour
         {
             item.GetComponent<Tooltip>().countBG.SetActive(true);
             item.GetComponent<Tooltip>().itemCountUI.text = "" + item.GetComponent<Tooltip>().itemCount;
-            Debug.Log(item.GetComponent<Tooltip>().itemCountUI.text);
         }
     }
 }

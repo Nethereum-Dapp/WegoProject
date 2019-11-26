@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SlotList : MonoBehaviour
 {
-    public List<GameObject> itemList = new List<GameObject>();
+    public List<GameObject> itemList = new List<GameObject>(); // 사용자가 구매한 아이템리스트 저장
 
     public static SlotList instance;
 
@@ -47,13 +47,13 @@ public class SlotList : MonoBehaviour
         {
             if (itemList.Count == 0)
             {
-                Debug.Log("0");
+                //Debug.Log("0");
                 addItem = true;
             }
             if (itemName == itemList[i].GetComponent<Item>().ItemInfo.itemName)
             {
                 itemList[i].GetComponent<Item>().ItemInfo.itemCount += count;
-                Debug.Log(itemList[i].GetComponent<Item>().ItemInfo.itemCount);
+                //Debug.Log(itemList[i].GetComponent<Item>().ItemInfo.itemCount);
                 item.ItemCountCheck(itemList[i]);
                 return;
             }
@@ -61,4 +61,5 @@ public class SlotList : MonoBehaviour
         addItem = true;
         
     }
+    
 }
