@@ -4,7 +4,9 @@ using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Util;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
+using System.Collections.Generic;
 using System.Numerics;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class RubiTokenWrapper
@@ -13,8 +15,8 @@ public class RubiTokenWrapper
     private static string contractAddress = "0x4B1c16E5D874137D16238f8fe73f20ab962aA965";
     private Contract contract;
 
-    private static string itemContractABI = @"[{'constant':true,'inputs':[{'name':'index','type':'uint256'}],'name':'getPlayerItem','outputs':[{'name':'','type':'uint256'},{'name':'','type':'uint256'}],'payable':false,'stateMutability':'view','type':'function'},{'constant':true,'inputs':[{'name':'','type':'address'},{'name':'','type':'uint256'}],'name':'itemToOwner','outputs':[{'name':'itemIndex','type':'uint256'},{'name':'count','type':'uint256'}],'payable':false,'stateMutability':'view','type':'function'},{'constant':false,'inputs':[{'name':'index','type':'uint256'},{'name':'add','type':'uint256'}],'name':'useItem','outputs':[],'payable':false,'stateMutability':'nonpayable','type':'function'},{'constant':true,'inputs':[{'name':'account','type':'address'}],'name':'getItemCount','outputs':[{'name':'','type':'uint256'}],'payable':false,'stateMutability':'view','type':'function'},{'constant':false,'inputs':[{'name':'index','type':'uint256'},{'name':'add','type':'uint256'}],'name':'purchaseItem','outputs':[],'payable':false,'stateMutability':'nonpayable','type':'function'}]";
-    private static string itemContractAddress = "0x149B0ae29Cc365aC9bADf78a2D6020B1dAfE35Cc";
+    private static string itemContractABI = @"[{'constant': true,'inputs': [{'name': '','type': 'address'},{'name': '','type': 'uint256'}],'name': 'itemToOwner','outputs': [{'name': 'itemIndex','type': 'uint256'},{'name': 'count','type': 'uint256'}],'payable': false,'stateMutability': 'view','type': 'function'},{'constant': false,'inputs': [{'name': 'index','type': 'uint256'},{'name': 'add','type': 'uint256'}],'name': 'purchaseItem','outputs': [],'payable': false,'stateMutability': 'nonpayable','type': 'function'},{'constant': false,'inputs': [{'name': 'index','type': 'uint256'},{'name': 'add','type': 'uint256'}],'name': 'useItem','outputs': [],'payable': false,'stateMutability': 'nonpayable','type': 'function'},{'constant': true,'inputs': [{'name': 'index','type': 'uint256'}],'name': 'getPlayerItem','outputs': [{'name': 'itemIndex','type': 'uint256'},{'name': 'count','type': 'uint256'}],'payable': false,'stateMutability': 'view','type': 'function'},{'constant': true,'inputs': [{'name': 'account','type': 'address'}],'name': 'getItemCount','outputs': [{'name': '','type': 'uint256'}],'payable': false,'stateMutability': 'view','type': 'function'}]";
+    private static string itemContractAddress = "0xE8885D79A0482297190e33CD62E55E2A9f96B282";
     private Contract itemContract;
 
     [Tooltip("Using Unit :Ether")]
@@ -27,6 +29,8 @@ public class RubiTokenWrapper
 
     public static string masterAddress = "0xcEF6BEf33f86260e4f40b3feE889A98Ca6AE825B";
     private static string masterPrivateKey = "FB467591EF10F4E8B86D7D683D731D9B1C8BA08B1A46F92800979736074D15FF";
+
+    public List<string> inventory = new List<string>();
 
     public RubiTokenWrapper()
     {
@@ -45,9 +49,31 @@ public class RubiTokenWrapper
         return itemContract.GetFunction("getItemCount");
     }
 
-    public Function GetFunctionPlayerItem()
+    public async Task<int> GetItemCount()
     {
-        return itemContract.GetFunction("getPlayerItem");
+        int count = await GetFunctionItemCount().CallAsync<int>(WalletManager.Instance.publicAddress);
+        Debug.Log("count : " + count);
+
+        return count;
+    }
+
+    public async void getPlayerItem()
+    {
+        account = new Account(WalletManager.Instance.privateKey);
+        web3 = new Web3(account, WalletManager.Instance.URL);
+
+        var contractHandler = web3.Eth.GetContractHandler(itemContractAddress);
+        var getPlayerItemFunction = new GetPlayerItemFunction();
+
+        int count = await GetItemCount();
+
+        for (int i = 0; i < count; i++)
+        {
+            getPlayerItemFunction.index = i;
+            var getPlayerItemOutputDTO = await contractHandler.QueryDeserializingToObjectAsync<GetPlayerItemFunction, GetPlayerItemOutputDTO>(getPlayerItemFunction);
+            inventory.Add(getPlayerItemOutputDTO.itemIndex + "" + getPlayerItemOutputDTO.count);
+            Debug.Log(getPlayerItemOutputDTO.itemIndex + "" + getPlayerItemOutputDTO.count);
+        }
     }
 
     public async void Transfer()
@@ -70,8 +96,8 @@ public class RubiTokenWrapper
         var allTransferEventsForContract = await transferEventHandler.GetAllChanges(filterAllTransferEventsForContract);
         Debug.Log("Transfer event TransactionHash : " + allTransferEventsForContract[0].Log.TransactionHash);
 
-        string Wegoscan = "http://125.133.75.165:8083/blocks/0/txnList/";
-        Application.OpenURL(Wegoscan + allTransferEventsForContract[0].Log.TransactionHash);
+        //string Wegoscan = "http://125.133.75.165:8083/blocks/0/txnList/";
+        //Application.OpenURL(Wegoscan + allTransferEventsForContract[0].Log.TransactionHash);
     }
 
     public async void ReceiveTransfer(string myAddress, int amount)
@@ -94,8 +120,8 @@ public class RubiTokenWrapper
         var allTransferEventsForContract = await transferEventHandler.GetAllChanges(filterAllTransferEventsForContract);
         Debug.Log("Transfer event TransactionHash : " + allTransferEventsForContract[0].Log.TransactionHash);
 
-        string Wegoscan = "http://125.133.75.165:8083/blocks/0/txnList/";
-        Application.OpenURL(Wegoscan + allTransferEventsForContract[0].Log.TransactionHash);
+        //string Wegoscan = "http://125.133.75.165:8083/blocks/0/txnList/";
+        //Application.OpenURL(Wegoscan + allTransferEventsForContract[0].Log.TransactionHash);
     }
 
     public async void TransferMaster(int amount)
@@ -118,8 +144,8 @@ public class RubiTokenWrapper
         var allTransferEventsForContract = await transferEventHandler.GetAllChanges(filterAllTransferEventsForContract);
         Debug.Log("Transfer event TransactionHash : " + allTransferEventsForContract[0].Log.TransactionHash);
 
-        string Wegoscan = "http://125.133.75.165:8083/blocks/0/txnList/";
-        Application.OpenURL(Wegoscan + allTransferEventsForContract[0].Log.TransactionHash);
+        //string Wegoscan = "http://125.133.75.165:8083/blocks/0/txnList/";
+        //Application.OpenURL(Wegoscan + allTransferEventsForContract[0].Log.TransactionHash);
     }
 
     public async void PurchaseItem(int index, int add)
@@ -138,8 +164,8 @@ public class RubiTokenWrapper
         Debug.Log(purchase.itemIndex + "/" + purchase.count);
         var transactionReceipt = await purchaseHandler.SendRequestAndWaitForReceiptAsync(itemContractAddress, purchase);
 
-        string Wegoscan = "http://125.133.75.165:8083/blocks/0/txnList/";
-        Application.OpenURL(Wegoscan + transactionReceipt.TransactionHash);
+        //string Wegoscan = "http://125.133.75.165:8083/blocks/0/txnList/";
+        //Application.OpenURL(Wegoscan + transactionReceipt.TransactionHash);
     }
 
     public async void UseItem(int index, int add)
@@ -157,8 +183,8 @@ public class RubiTokenWrapper
 
         var transactionReceipt = await useItemHandler.SendRequestAndWaitForReceiptAsync(itemContractAddress, useItem);
 
-        string Wegoscan = "http://125.133.75.165:8083/blocks/0/txnList/";
-        Application.OpenURL(Wegoscan + transactionReceipt.TransactionHash);
+        //string Wegoscan = "http://125.133.75.165:8083/blocks/0/txnList/";
+        //Application.OpenURL(Wegoscan + transactionReceipt.TransactionHash);
     }
 
     [Function("transfer", "bool")]
@@ -204,20 +230,24 @@ public class RubiTokenWrapper
         public int count { get; set; }
     }
 
-    //[Function("getPlayerItem", "uint")]
-    //public class getPlayerItem : FunctionMessage
-    //{
-    //    [Parameter("uint", "index", 1)]
-    //    public int index { get; set; }
-    //}
+    public class GetPlayerItemFunction : GetPlayerItemFunctionBase { }
 
-    //[Event("GetFunctionPlayerItem")]
-    //public class ItemEventDTO : IEventDTO
-    //{
-    //    [Parameter("uint", "itemIndex", 1)]
-    //    public int itemIndex { get; set; }
+    [Function("getPlayerItem", typeof(GetPlayerItemOutputDTO))]
+    public class GetPlayerItemFunctionBase : FunctionMessage
+    {
+        [Parameter("uint", "index", 1)]
+        public int index { get; set; }
+    }
 
-    //    [Parameter("uint", "count", 2)]
-    //    public int count { get; set; }
-    //}
+    public class GetPlayerItemOutputDTO : GetPlayerItemOutputDTOBase { }
+
+    [FunctionOutput]
+    public class GetPlayerItemOutputDTOBase : IFunctionOutputDTO
+    {
+        [Parameter("uint", "itemIndex", 1)]
+        public int itemIndex { get; set; }
+
+        [Parameter("uint", "count", 2)]
+        public int count { get; set; }
+    }
 }

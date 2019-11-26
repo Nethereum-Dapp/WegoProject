@@ -28,7 +28,7 @@ contract ItemInventory{
         }
     }
     
-    function getPlayerItem(uint index) public view returns (uint, uint) {
+    function getPlayerItem(uint index) public view returns (uint itemIndex, uint count) {
         return (itemToOwner[msg.sender][index].itemIndex, itemToOwner[msg.sender][index].count);
     }
     

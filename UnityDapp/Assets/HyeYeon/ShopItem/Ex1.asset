@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: 0
   itemSprite: {fileID: 21300000, guid: 881f8e3bc93585c4c9a123ff5d882ae7, type: 3}
-  itemCost: 10
+  itemCost: 1
   itemDesc: "\uAE30\uBCF8 HP \uBB3C\uC57D"
   itemCount: 0
