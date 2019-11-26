@@ -67,12 +67,15 @@ public class RubiTokenWrapper
 
         int count = await GetItemCount();
 
+        if(inventory.Count != 0)
+            inventory.Clear();
+
         for (int i = 0; i < count; i++)
         {
             getPlayerItemFunction.index = i;
             var getPlayerItemOutputDTO = await contractHandler.QueryDeserializingToObjectAsync<GetPlayerItemFunction, GetPlayerItemOutputDTO>(getPlayerItemFunction);
-            inventory.Add(getPlayerItemOutputDTO.itemIndex + "" + getPlayerItemOutputDTO.count);
-            Debug.Log(getPlayerItemOutputDTO.itemIndex + "" + getPlayerItemOutputDTO.count);
+            inventory.Add(getPlayerItemOutputDTO.itemIndex + "/" + getPlayerItemOutputDTO.count);
+            Debug.Log(getPlayerItemOutputDTO.itemIndex + "/" + getPlayerItemOutputDTO.count);
         }
     }
 
@@ -157,11 +160,11 @@ public class RubiTokenWrapper
 
         var purchase = new PurchaseItemFunction()
         {
-            itemIndex = index,
-            count = add
+            index = index,
+            add = add
         };
 
-        Debug.Log(purchase.itemIndex + "/" + purchase.count);
+        Debug.Log(purchase.index + "/" + purchase.add);
         var transactionReceipt = await purchaseHandler.SendRequestAndWaitForReceiptAsync(itemContractAddress, purchase);
 
         //string Wegoscan = "http://125.133.75.165:8083/blocks/0/txnList/";
@@ -213,11 +216,11 @@ public class RubiTokenWrapper
     [Function("purchaseItem")]
     public class PurchaseItemFunction : FunctionMessage
     {
-        [Parameter("uint", "itemIndex", 1)]
-        public int itemIndex { get; set; }
+        [Parameter("uint", "Index", 1)]
+        public int index { get; set; }
 
-        [Parameter("uint", "count", 2)]
-        public int count { get; set; }
+        [Parameter("uint", "add", 2)]
+        public int add { get; set; }
     }
 
     [Function("useItem")]
