@@ -75,7 +75,6 @@ public class ClickItem : MonoBehaviour
                 if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(1))
                 {
                     countMessage.SetActive(true);
-                    //rubyCoin += hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost;
                     multiplePrice = hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost;
                     multipleItem = hit.collider.gameObject;
 

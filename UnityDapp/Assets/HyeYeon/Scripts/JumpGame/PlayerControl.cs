@@ -58,6 +58,7 @@ public class PlayerControl : MonoBehaviour
     private GameObject burningBG; // 버닝상태일때의 배경
 
     Animator anim;
+    public GameObject wall;
 
     void Awake()
     {
@@ -155,26 +156,42 @@ public class PlayerControl : MonoBehaviour
     {
         bx2.enabled = true;
 
-        if(!isBurning)
+        if (!isBurning)
         {
-            if (score < 100)
+            wall.SetActive(true);
+
+            if (score  == 0)
             {
                 rd2.isKinematic = false;
             }
-            
-            if (Input.GetButtonDown("Fire1") && (rd2.velocity.y <= 0) && (gameObject.transform.position.y <= 3f)) 
+
+            if (Input.GetButtonDown("Fire1") && (rd2.velocity.y <= 0) && (gameObject.transform.position.y <= 3f))
             {
                 rd2.velocity = new Vector2(0.5f, jumpForce);
                 anim.SetTrigger("Jump");
             }
 
-        } else
+        }
+        else
         {
-            Vector3 mousePosition = camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
-            gameObject.transform.position = mousePosition;
+            wall.SetActive(false);
+
+            Vector3 currentPosition = camera.ScreenToWorldPoint(gameObject.transform.position);
+            Vector3 mousePosition = camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 1));
+
+            if (mousePosition.x > 9 || mousePosition.y > 5 || mousePosition.x < -8 || mousePosition.y < -4.5) 
+            {
+                rd2.isKinematic = true;
+                rd2.velocity = new Vector2(0, 0);
+            } else
+            {
+                gameObject.transform.position = mousePosition;
+            }
+
+            //Debug.Log(currentPosition + "/" + mousePosition);
         }
 
-        if (transform.position.x < -11 || transform.position.y < -6)
+        if (transform.position.x < -11 || transform.position.y < -6 || transform.position.x > 15)
         {
             gameOver = true;
             gameOverText.SetActive(true);
@@ -214,7 +231,7 @@ public class PlayerControl : MonoBehaviour
                 if (!isBurning)
                 {
                     burningBar_EnergyField.fillAmount += 0.5f;
-                }
+                } 
 
                 if (burningBar_EnergyField.fillAmount == 1.0f)
                 {
@@ -227,15 +244,14 @@ public class PlayerControl : MonoBehaviour
                     {
                         burningBar_EnergyField.fillAmount = 1.0f;
 
-                        ISBurningTrue();
-                        StartCoroutine(ISBurningFalse());
+                        StartCoroutine(ISBurningTrue());
                     }
                 }
             }
         }
     }
 
-    private void ISBurningTrue()
+    IEnumerator ISBurningTrue()
     {
         scroll.burningSpeed += 2.0f;
 
@@ -250,7 +266,7 @@ public class PlayerControl : MonoBehaviour
 
         anim.SetTrigger("Jump");
         isBurning = true;
-        rd2.isKinematic = true;
+        //rd2.isKinematic = true;
         burningBG.SetActive(true);
         burningBG.transform.position = new Vector3(0, 0, 1);
         burningBG.gameObject.GetComponent<Scroll>().burningSpeed += 5.0f;
@@ -264,16 +280,12 @@ public class PlayerControl : MonoBehaviour
         burningBar_EnergyField.enabled = false;
         burningPlayer.SetActive(true);
 
-        StartCoroutine(ISBurningFalse());
-    }
-
-    IEnumerator ISBurningFalse ()
-    {
         yield return new WaitForSeconds(10f);
 
         isBurning = false;
 
         rd2.isKinematic = true;
+        rd2.velocity = new Vector2(0, 0);
 
         scroll.burningSpeed = 1;
 
@@ -283,22 +295,15 @@ public class PlayerControl : MonoBehaviour
         burningBar_EnergyField.enabled = true;
 
         burningBar_EnergyField.fillAmount = 0.05f;
-        
+
         buringBGM.Stop();
         idleBGM.Play();
 
-        StartCoroutine(ISKinematicFalse());
-
-    }
-
-    IEnumerator ISKinematicFalse ()
-    {
-        rd2.isKinematic = true;
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(1.5f);
         rd2.isKinematic = false;
+        
     }
 
-    
     // Replay
     public void ReplayGame()
     {
