@@ -86,7 +86,7 @@ public class ClickItem : MonoBehaviour
                     //AccountManager.Instance.TokenTransferMaster(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost);
                     //AccountManager.Instance.PurchaseItem(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemName, 1);
                     //AccountManager.Instance.UseItem(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemName, 1);
-                    rubyCoin = await AccountManager.Instance.GetTokenBalanceOf() + 10000;
+                    //rubyCoin = await AccountManager.Instance.GetTokenBalanceOf() + 10000;
 
                     rubyCoin -= hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost;
                     
@@ -110,24 +110,6 @@ public class ClickItem : MonoBehaviour
             }
         }
 
-<<<<<<< HEAD
-        
-=======
-        if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(1))
-        {
-            if (hit.collider != null)
-            {
-
-                countMessage.SetActive(true);
-                rubyCoin += hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost;
-                multiplePrice = hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost;
-                multipleItem = hit.collider.gameObject;
-                
-                buttonText.text = "'" + hit.collider.gameObject.name + "' 아이템 구매?";
-            }
-        }
-
->>>>>>> multipurchase
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             countMessage.SetActive(false);
