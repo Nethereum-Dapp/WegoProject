@@ -3,7 +3,19 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Ground
+  - Ruby
+  - Base
+  - Salad
+  - Onions
+  - Tomato
+  - Meat
+  - Chicken
+  - Cheese
+  - Top
+  - Ketchup
+  - Lightning
   layers:
   - Default
   - TransparentFX
