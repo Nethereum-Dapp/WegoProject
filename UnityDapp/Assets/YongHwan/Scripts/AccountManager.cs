@@ -63,6 +63,8 @@ public class AccountManager : MonoBehaviour
     private Account account;
     private Web3 web3;
 
+    public List<int> items;
+
     private static RubiTokenWrapper tokenContractService;
 
     private void Awake()
@@ -77,20 +79,40 @@ public class AccountManager : MonoBehaviour
         tokenContractService = new RubiTokenWrapper();
     }
 
-    public void ReceiveTokenTransfer(int amount)
-    {
-        tokenContractService.toAddress = WalletManager.Instance.publicAddress;
-        tokenContractService.transferAmount = amount;
-
-        tokenContractService.ReceiveTransfer();
-    }
-
     public async Task<int> GetTokenBalanceOf()
     {
         int balance = (int)UnitConversion.Convert.FromWei(await tokenContractService.GetFunctionBalanceOf().CallAsync<BigInteger>(WalletManager.Instance.publicAddress));
         Debug.Log("Balance : " + balance);
 
         return balance;
+    }
+
+    public async void GetItemCount()
+    {
+        int count = await tokenContractService.GetFunctionItemCount().CallAsync<int>(WalletManager.Instance.publicAddress);
+        Debug.Log("count : " + count);
+
+        //return count;
+    }
+
+    public async void GetPlayerItem()
+    {
+        //int count = await GetItemCount();
+
+        //for (int i = 0; i < count; i++)
+        //{
+        //    items.Add(await tokenContractService.GetFunctionPlayerItem().CallAsync<int>(i));
+        //}
+    }
+
+    public void ReceiveTokenTransfer(int amount)
+    {
+        tokenContractService.ReceiveTransfer(WalletManager.Instance.publicAddress, amount);
+    }
+
+    public void TokenTransferMaster(int amount)
+    {
+        tokenContractService.TransferMaster(amount);
     }
 
     public void GetTokenTransfer()
@@ -101,9 +123,14 @@ public class AccountManager : MonoBehaviour
         tokenContractService.Transfer();
     }
 
-    public void TokenTransferMaster(int amount)
+    public void PurchaseItem(int index, int add)
     {
-        tokenContractService.TransferMaster(amount);
+        tokenContractService.PurchaseItem(index, add);
+    }
+
+    public void UseItem(int index, int add)
+    {
+        tokenContractService.UseItem(index, add);
     }
 
     public void CreateAccount()

@@ -64,7 +64,7 @@ public class ClickItem : MonoBehaviour
     }
 
    // 아이템 다중 일때 슬롯에 개수 보이도록 수정하기 
-    private void PurchaseItem()
+    private async void PurchaseItem()
     {
         if (Input.GetMouseButtonDown(1))
         {
@@ -84,6 +84,10 @@ public class ClickItem : MonoBehaviour
                 if (rubyCoin - hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost >= 0)
                 {
                     //AccountManager.Instance.TokenTransferMaster(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost);
+                    //AccountManager.Instance.PurchaseItem(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemName, 1);
+                    //AccountManager.Instance.UseItem(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemName, 1);
+                    rubyCoin = await AccountManager.Instance.GetTokenBalanceOf() + 10000;
+
                     rubyCoin -= hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost;
                     
                     SlotList.instance.ItemSave(hit.collider.gameObject, hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemName, 1);
@@ -106,7 +110,24 @@ public class ClickItem : MonoBehaviour
             }
         }
 
+<<<<<<< HEAD
         
+=======
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(1))
+        {
+            if (hit.collider != null)
+            {
+
+                countMessage.SetActive(true);
+                rubyCoin += hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost;
+                multiplePrice = hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost;
+                multipleItem = hit.collider.gameObject;
+                
+                buttonText.text = "'" + hit.collider.gameObject.name + "' 아이템 구매?";
+            }
+        }
+
+>>>>>>> multipurchase
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             countMessage.SetActive(false);

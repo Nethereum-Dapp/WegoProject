@@ -328,7 +328,6 @@ public class PlayerControl : MonoBehaviour
                 highScoreText.text = "HighScore : " + highScore.ToString("N0");
             }
         }
-
         AccountManager.Instance.ReceiveTokenTransfer(rubyScore);
     }
 

@@ -39,7 +39,7 @@ public class SlotList : MonoBehaviour
     }
 
     // 리스트 저장하는 부분
-    public void ItemSave(GameObject itemObejct, string itemName, int count)
+    public void ItemSave(GameObject itemObejct, int itemName, int count)
     {
         addItem = false;
 
