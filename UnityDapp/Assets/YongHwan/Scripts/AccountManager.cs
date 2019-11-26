@@ -63,8 +63,6 @@ public class AccountManager : MonoBehaviour
     private Account account;
     private Web3 web3;
 
-    public List<int> items;
-
     private static RubiTokenWrapper tokenContractService;
 
     private void Awake()
@@ -87,22 +85,9 @@ public class AccountManager : MonoBehaviour
         return balance;
     }
 
-    public async void GetItemCount()
+    public void GetPlayerItem()
     {
-        int count = await tokenContractService.GetFunctionItemCount().CallAsync<int>(WalletManager.Instance.publicAddress);
-        Debug.Log("count : " + count);
-
-        //return count;
-    }
-
-    public async void GetPlayerItem()
-    {
-        //int count = await GetItemCount();
-
-        //for (int i = 0; i < count; i++)
-        //{
-        //    items.Add(await tokenContractService.GetFunctionPlayerItem().CallAsync<int>(i));
-        //}
+        tokenContractService.getPlayerItem();
     }
 
     public void ReceiveTokenTransfer(int amount)

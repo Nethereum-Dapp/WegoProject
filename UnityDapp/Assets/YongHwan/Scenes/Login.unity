@@ -2759,7 +2759,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1075555405}
-        m_MethodName: PurchaseItem
+        m_MethodName: ImportAccountFromJson
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2927,7 +2927,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   URL: http://121.140.127.51:7766
   publicAddress: 
-  privateKey: BE1EEA742C92A0F3179487744154575561ECF63B01315D9F043B684F06DE2817
+  privateKey: 
   password: 
   encryptedJson: 
   jsonPath: C:\developer.yhl\Wego_Project\WegoProject\.secret.json
@@ -2956,6 +2956,7 @@ MonoBehaviour:
   missingText: {fileID: 1067577124}
   toAddress: 
   transferAmount: 0
+  items: 
 --- !u!1 &1199614695
 GameObject:
   m_ObjectHideFlags: 0
