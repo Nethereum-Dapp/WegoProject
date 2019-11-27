@@ -63,12 +63,10 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private GameObject burningEnter; // 버닝타임일때 엔터 연타 이미지 애니메이션
 
+    SoundManager sound;
+
     [SerializeField]
-    private AudioSource bugerSFX; // 버거 완성시 나오는 효과음 
-    [SerializeField]
-    private AudioSource buringBGM;  // 버닝상태에서 나오는 배경음
-    [SerializeField]
-    private AudioSource idleBGM; // 평상시 게임시 나오는 배경음
+    private AudioSource sfx; // 루비 얻을 시 효과음
 
     [SerializeField]
     private Text rubyTextUI; // 얻은 루비 갯수를 나타내는 UI
@@ -83,6 +81,10 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        sound = GetComponent<SoundManager>();
+
+        sound.AudioManager(0);
+
         gameOver = false;
         scoreflag = false;
         GameOverImg.SetActive(false);
@@ -120,6 +122,7 @@ public class GameManager : MonoBehaviour
                 time -= Time.deltaTime;
                 //timeText.text = "" + Mathf.Round(time);
                 timeText.text = time.ToString("N0");
+                
             }
             
             if (burningBar_EnergyField.fillAmount >= 1.0f)
@@ -183,7 +186,7 @@ public class GameManager : MonoBehaviour
 
         if (scoreflag)
         {
-            bugerSFX.Play();
+            sfx.Play();
             score += 100;
             rubyText++;
             rubyTextUI.text = " : " + rubyText;
@@ -193,8 +196,7 @@ public class GameManager : MonoBehaviour
 
             if (burningBar_EnergyField.fillAmount >= 1.0f)
             {
-                buringBGM.Play();
-                idleBGM.Stop();
+                sound.AudioManager(1);
                 StartCoroutine(IsBurningFalse());
             } 
             
@@ -309,7 +311,7 @@ public class GameManager : MonoBehaviour
                 rubyText++;
                 rubyTextUI.text = " : " + rubyText;
                 scoreText.text = "Score : " + score;
-                bugerSFX.Play();
+                sfx.Play();
 
             } else
             {
@@ -324,8 +326,8 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(5f);
         isBurning = false;
         burningBar_EnergyField.fillAmount = 0.05f;
-        buringBGM.Stop();
-        idleBGM.Play();
+
+        sound.AudioManager(0);
     }
 
     // 플레이어 커서의 x,y 좌표를 받아 해당 위치에 일치하는 버거 재료들 생성

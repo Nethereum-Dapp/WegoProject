@@ -22,10 +22,10 @@ public class Player : MonoBehaviour
     private Image hp; // HP Bar Image UI
 
     [SerializeField]
-    private AudioSource ruby_SFX;
+    private AudioSource ruby_SFX; // Coin SFX
 
     [SerializeField]
-    private AudioSource hurt_SFX;
+    private AudioSource hurt_SFX; // Hurt SFX
 
     [SerializeField]
     private Text highScoreText; // highScoreText UI
@@ -37,16 +37,12 @@ public class Player : MonoBehaviour
 
     public bool isBurning; // 버닝모드 검사
 
-    Animator anim;
-
-    public AudioSource audio_Idle;
-    public AudioSource audio_Burning;
+    Animator anim; // player Animation Play
 
     // Start is called before the first frame update
     void Start()
     {
         gm = FindObjectOfType<GM>();
-        ruby_SFX = GetComponent<AudioSource>();
         anim = GetComponent<Animator>();
 
         burningBar.enabled = true;
@@ -56,9 +52,6 @@ public class Player : MonoBehaviour
         hp.fillAmount = 1;
         burningBar.fillAmount = 0.05f;
         score = 0;
-
-        audio_Idle = gm.GetComponent<AudioSource>();
-
     }
 
     // Update is called once per frame
@@ -76,10 +69,10 @@ public class Player : MonoBehaviour
                 if(burningBar.fillAmount >= 1)
                 {
                     burningFullBar.enabled = true;
-                    burningBar.fillAmount = 0.05f;
                     burningBar.enabled = false;
-
                     StartCoroutine(Burning());
+                    burningBar.fillAmount = 0.05f;
+                    return;
                 }
             } 
         }
@@ -88,8 +81,7 @@ public class Player : MonoBehaviour
     IEnumerator Burning()
     {
         isBurning = true;
-        audio_Idle.Stop();
-        audio_Burning.Play();
+        gm.sound.AudioManager(1);
 
         gm.GenerateRuby(2);
         
@@ -104,10 +96,9 @@ public class Player : MonoBehaviour
 
         yield return new WaitForSeconds(3f);
         isBurning = false;
+        gm.sound.AudioManager(0);
         burningFullBar.enabled = false;
         burningBar.enabled = true;
-        audio_Idle.Play();
-        audio_Burning.Stop();
     }
 
 
