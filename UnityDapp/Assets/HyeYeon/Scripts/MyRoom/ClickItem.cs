@@ -94,8 +94,6 @@ public class ClickItem : MonoBehaviour
                     rubyCoinUI.text = " : " + rubyCoin;
 
                     //AccountManager.Instance.UseItem(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemName, 1);
-
-                    rubyCoin -= target.ItemInfo.itemCost;
                     
                     SlotList.instance.ItemSave(target.gameObject, target.ItemInfo.itemName, 1);
 
@@ -107,8 +105,6 @@ public class ClickItem : MonoBehaviour
                         SlotList.instance.itemList.Add(myItemClones);
                         SlotList.instance.itemList.Last().GetComponent<Item>().ItemInfo.itemCount++;
                     }
-
-                    rubyCoin = await AccountManager.Instance.GetTokenBalanceOf();
                 } else
                 {
                     warningText.enabled = true;
@@ -124,7 +120,7 @@ public class ClickItem : MonoBehaviour
     }
     
     // 다중 구매 버튼 클릭시 
-    public void MultipleItemPurchase()
+    public async void MultipleItemPurchase()
     {
         if (inputCount.text != null && rubyCoin >=0)
         {
@@ -141,7 +137,11 @@ public class ClickItem : MonoBehaviour
 
             if(rubyCoin - multiplePrice * _count >= 0)
             {
-                rubyCoin -= multiplePrice * _count;
+                bool flag = await AccountManager.Instance.TokenTransferMaster(multiplePrice * _count);
+
+                AccountManager.Instance.PurchaseItem(multipleItem.GetComponent<Item>().ItemInfo.itemName, _count);
+
+                rubyCoin = await AccountManager.Instance.GetTokenBalanceOf();
                 rubyCoinUI.text = " : " + rubyCoin;
 
                 SlotList.instance.ItemSave(multipleItem, multipleItem.GetComponent<Item>().ItemInfo.itemName, _count);
