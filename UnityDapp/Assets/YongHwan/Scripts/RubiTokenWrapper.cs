@@ -127,7 +127,7 @@ public class RubiTokenWrapper
         //Application.OpenURL(Wegoscan + allTransferEventsForContract[0].Log.TransactionHash);
     }
 
-    public async void TransferMaster(int amount)
+    public async Task<bool> TransferMaster(int amount)
     {
         account = new Account(WalletManager.Instance.privateKey);
         web3 = new Web3(account, WalletManager.Instance.URL);
@@ -147,6 +147,7 @@ public class RubiTokenWrapper
         var allTransferEventsForContract = await transferEventHandler.GetAllChanges(filterAllTransferEventsForContract);
         Debug.Log("Transfer event TransactionHash : " + allTransferEventsForContract[0].Log.TransactionHash);
 
+        return true;
         //string Wegoscan = "http://125.133.75.165:8083/blocks/0/txnList/";
         //Application.OpenURL(Wegoscan + allTransferEventsForContract[0].Log.TransactionHash);
     }

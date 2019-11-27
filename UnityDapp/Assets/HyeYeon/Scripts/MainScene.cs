@@ -41,12 +41,13 @@ public class MainScene : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public void OnPointerEnter(PointerEventData eventData)
     {
         tooltip.SetActive(true);
-        tooltip.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y - 400);
+        tooltip.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y - 600);
         tooltipTextUI.text = TextEnterLine(tooltipText);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        if(tooltip)
         tooltip.SetActive(false);
     }
 
@@ -55,5 +56,4 @@ public class MainScene : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         text = text.Replace("\\n", "\n");
         return text;
     }
-
 }

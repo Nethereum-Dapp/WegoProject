@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections;
 using System.Linq;
+using System.Threading.Tasks;
 
 public class ClickItem : MonoBehaviour
 {
@@ -52,7 +53,7 @@ public class ClickItem : MonoBehaviour
         inputCount.characterLimit = 3;
         warningText.enabled = false;
 
-        rubyCoin = 10000;//await AccountManager.Instance.GetTokenBalanceOf();
+        rubyCoin = await AccountManager.Instance.GetTokenBalanceOf();
         rubyCoinUI.text = " : " + rubyCoin;
     }
 
@@ -72,38 +73,42 @@ public class ClickItem : MonoBehaviour
         {
             if (hit.collider != null)
             {
+                Item target = hit.collider.gameObject.GetComponent<Item>();
+
                 if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(1))
                 {
                     countMessage.SetActive(true);
-                    multiplePrice = hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost;
-                    multipleItem = hit.collider.gameObject;
+                    multiplePrice = target.ItemInfo.itemCost;
+                    multipleItem = target.gameObject;
 
-                    buttonText.text = "'" + hit.collider.gameObject.name + "' 아이템 구매?";
+                    buttonText.text = "'" + target.gameObject.name + "' 아이템 구매?";
                     return;
                 }
 
-                if (rubyCoin - hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost >= 0)
+                if (rubyCoin - target.ItemInfo.itemCost >= 0)
                 {
-                    //AccountManager.Instance.TokenTransferMaster(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost);
-                    //AccountManager.Instance.PurchaseItem(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemName, 1);
-                    //AccountManager.Instance.UseItem(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemName, 1);
-                    //rubyCoin = await AccountManager.Instance.GetTokenBalanceOf() + 10000;
+                    bool flag = await AccountManager.Instance.TokenTransferMaster(target.ItemInfo.itemCost);
 
-                    rubyCoin -= hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemCost;
+                    AccountManager.Instance.PurchaseItem(target.ItemInfo.itemName, 1);
+                    rubyCoin = await AccountManager.Instance.GetTokenBalanceOf();
+                    rubyCoinUI.text = " : " + rubyCoin;
+
+                    //AccountManager.Instance.UseItem(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemName, 1);
+
+                    rubyCoin -= target.ItemInfo.itemCost;
                     
-                    SlotList.instance.ItemSave(hit.collider.gameObject, hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemName, 1);
+                    SlotList.instance.ItemSave(target.gameObject, target.ItemInfo.itemName, 1);
 
                     if (SlotList.instance.addItem)
                     {
-                        myItemClones = Instantiate(hit.collider.gameObject, myContents.transform.position, Quaternion.identity);
+                        myItemClones = Instantiate(target.gameObject, myContents.transform.position, Quaternion.identity);
                         myItemClones.transform.SetParent(myContents.transform, false);
                         myItemClones.GetComponent<BoxCollider2D>().enabled = false;
                         SlotList.instance.itemList.Add(myItemClones);
                         SlotList.instance.itemList.Last().GetComponent<Item>().ItemInfo.itemCount++;
                     }
 
-                    //rubyCoin = await AccountManager.Instance.GetTokenBalanceOf();
-                    rubyCoinUI.text = " : " + rubyCoin;
+                    rubyCoin = await AccountManager.Instance.GetTokenBalanceOf();
                 } else
                 {
                     warningText.enabled = true;

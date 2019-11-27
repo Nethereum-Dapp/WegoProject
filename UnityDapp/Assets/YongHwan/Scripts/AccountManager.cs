@@ -95,9 +95,11 @@ public class AccountManager : MonoBehaviour
         tokenContractService.ReceiveTransfer(WalletManager.Instance.publicAddress, amount);
     }
 
-    public void TokenTransferMaster(int amount)
+    public async Task<bool> TokenTransferMaster(int amount)
     {
-        tokenContractService.TransferMaster(amount);
+        await tokenContractService.TransferMaster(amount);
+
+        return true;
     }
 
     public void GetTokenTransfer()
