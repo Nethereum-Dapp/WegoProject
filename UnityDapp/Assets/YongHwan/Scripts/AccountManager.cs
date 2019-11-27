@@ -87,7 +87,7 @@ public class AccountManager : MonoBehaviour
 
     public void GetPlayerItem()
     {
-        tokenContractService.getPlayerItem();
+        tokenContractService.GetPlayerItem();
     }
 
     public void ReceiveTokenTransfer(int amount)

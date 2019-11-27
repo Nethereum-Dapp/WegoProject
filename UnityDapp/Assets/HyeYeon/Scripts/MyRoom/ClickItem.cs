@@ -37,11 +37,12 @@ public class ClickItem : MonoBehaviour
     RaycastHit2D hit;
     Vector3 mousePos;
 
-    bool flag = false;
+    bool flag;
 
     // 화면고정
     void Awake()
     {
+        flag = true;
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         Screen.SetResolution(1920, 1080, true);
     }
@@ -60,7 +61,8 @@ public class ClickItem : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        PurchaseItem();
+        if(flag)
+            PurchaseItem();
 
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);
@@ -87,10 +89,11 @@ public class ClickItem : MonoBehaviour
 
                 if (rubyCoin - target.ItemInfo.itemCost >= 0)
                 {
-                    bool flag = await AccountManager.Instance.TokenTransferMaster(target.ItemInfo.itemCost);
-
+                    flag = false;
+                    await AccountManager.Instance.TokenTransferMaster(target.ItemInfo.itemCost);
                     AccountManager.Instance.PurchaseItem(target.ItemInfo.itemName, 1);
                     rubyCoin = await AccountManager.Instance.GetTokenBalanceOf();
+                    flag = true;
                     rubyCoinUI.text = " : " + rubyCoin;
 
                     //AccountManager.Instance.UseItem(hit.collider.gameObject.GetComponent<Item>().ItemInfo.itemName, 1);
@@ -137,12 +140,12 @@ public class ClickItem : MonoBehaviour
 
             if(rubyCoin - multiplePrice * _count >= 0)
             {
-                bool flag = await AccountManager.Instance.TokenTransferMaster(multiplePrice * _count);
-
+                flag = false;
+                await AccountManager.Instance.TokenTransferMaster(multiplePrice * _count);
                 AccountManager.Instance.PurchaseItem(multipleItem.GetComponent<Item>().ItemInfo.itemName, _count);
-
                 rubyCoin = await AccountManager.Instance.GetTokenBalanceOf();
                 rubyCoinUI.text = " : " + rubyCoin;
+                flag = true;
 
                 SlotList.instance.ItemSave(multipleItem, multipleItem.GetComponent<Item>().ItemInfo.itemName, _count);
 
