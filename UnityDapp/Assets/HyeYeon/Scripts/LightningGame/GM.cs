@@ -8,8 +8,6 @@ using System.Collections.Generic;
 
 public class GM : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject player; // 플레이어 캐릭터
 
     [SerializeField]
     private Text timeText; // 타이머 UI
@@ -43,7 +41,9 @@ public class GM : MonoBehaviour
     private float term; // 몇 초에 한 번씩 장애물을 생성할지 결정할 변수 (기준점)
     private float currentTime; // 현재 시간을 받아올 변수
 
-    Player _player; // player script를 사용하기 위한 player형 변수
+    Player player; // player script를 사용하기 위한 player형 변수
+
+    public SoundManager sound; // BGM
 
     int lightningCount; // lightning clone level count
 
@@ -66,7 +66,9 @@ public class GM : MonoBehaviour
 
         //InvokeRepeating("GenerateRuby(1)", 10, 10);
 
-        _player = FindObjectOfType<Player>();
+        player = FindObjectOfType<Player>();
+        sound = GetComponent<SoundManager>();
+        sound.AudioManager(0);
     }
 
     // Update is called once per frame
@@ -74,7 +76,7 @@ public class GM : MonoBehaviour
     {
         if (!isGameOver)
         {
-            if(!_player.isBurning)
+            if(!player.isBurning)
             {
                 time -= Time.deltaTime;
                 timeText.text = time.ToString("N0");
@@ -109,7 +111,7 @@ public class GM : MonoBehaviour
             time = 60;
             isGameOver = true;
             gameOverText.SetActive(true);
-            _player.HighScoreSave();
+            player.HighScoreSave();
             
         }
     }

@@ -42,12 +42,10 @@ public class PlayerControl : MonoBehaviour
     [SerializeField]
     private GameObject burningPlayer; // 버닝 모드일때 플레이어의 모습
 
+    SoundManager sound;
+
     [SerializeField]
     private AudioSource ruby_SFX; // 루비를 먹었을때의 효과음
-    [SerializeField]
-    private AudioSource buringBGM;  // 버닝상태에서 나오는 배경음
-    [SerializeField]
-    private AudioSource idleBGM; // 평상시 게임시 나오는 배경음
 
     private Scroll scroll; // scroll script를 쓰기위한 scroll형 변수
 
@@ -78,6 +76,8 @@ public class PlayerControl : MonoBehaviour
         anim = GetComponent<Animator>();
         rd2 = GetComponent<Rigidbody2D>();
         bx2 = GetComponent<BoxCollider2D>();
+        sound = GetComponent<SoundManager>();
+
         scroll = FindObjectOfType<Scroll>();
 
         rd2.isKinematic = true;
@@ -92,7 +92,7 @@ public class PlayerControl : MonoBehaviour
 
         burningBG.SetActive(false);
 
-        idleBGM.Play();
+        sound.AudioManager(0);
     }
 
     // Update is called once per frame
@@ -164,13 +164,16 @@ public class PlayerControl : MonoBehaviour
             {
                 rd2.isKinematic = false;
             }
-
-            if (Input.GetButtonDown("Fire1") && (rd2.velocity.y <= 0) && (gameObject.transform.position.y <= 3f))
+            if (rd2)
             {
-                rd2.velocity = new Vector2(0.5f, jumpForce);
-                anim.SetTrigger("Jump");
-            }
+                if (Input.GetButtonDown("Fire1") && (rd2.velocity.y <= 0) && (gameObject.transform.position.y <= 3f))
+                {
 
+                    rd2.velocity = new Vector2(0.5f, jumpForce);
+                    anim.SetTrigger("Jump");
+                }
+                else return;
+            }
         }
         else
         {
@@ -237,8 +240,7 @@ public class PlayerControl : MonoBehaviour
                 {
                     isBurning = true;
 
-                    idleBGM.Stop();
-                    buringBGM.Play();
+                    sound.AudioManager(1);
 
                     if (isBurning)
                     {
@@ -283,7 +285,6 @@ public class PlayerControl : MonoBehaviour
         yield return new WaitForSeconds(10f);
 
         isBurning = false;
-
         rd2.isKinematic = true;
         rd2.velocity = new Vector2(0, 0);
 
@@ -296,12 +297,13 @@ public class PlayerControl : MonoBehaviour
 
         burningBar_EnergyField.fillAmount = 0.05f;
 
-        buringBGM.Stop();
-        idleBGM.Play();
+        sound.AudioManager(0);
 
-        yield return new WaitForSeconds(1.5f);
+        Destroy(rd2);
+        yield return new WaitForSeconds(0.5f);
+        rd2 = gameObject.AddComponent<Rigidbody2D>();
+        rd2.constraints = RigidbodyConstraints2D.FreezeRotation;
         rd2.isKinematic = false;
-        
     }
 
     // Replay
