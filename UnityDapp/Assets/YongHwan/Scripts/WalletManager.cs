@@ -29,6 +29,7 @@ public class WalletManager : MonoBehaviour
 
     public void Awake()
     {
+        jsonPath = Application.persistentDataPath + "/.secret.json";
         Instance = this;
     }
 
