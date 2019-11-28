@@ -7,9 +7,14 @@ public class UIManager : MonoBehaviour
 {
     public GameObject creatCanvas;
     public GameObject loginCanvas;
+    public GameObject isCapsLock;
     public Text passwordStrength;
     public Text passwordStrength2;
     public bool creatFlag = false;
+
+    [System.Runtime.InteropServices.DllImport("USER32.dll")]
+    public static extern short GetKeyState(int nVirtKey);
+    bool IsCapsLockOn => (GetKeyState(0x14) & 1) > 0;
 
     void Update()
     {
@@ -35,6 +40,15 @@ public class UIManager : MonoBehaviour
             {
                 passwordStrength2.enabled = true;
             }
+        }
+
+        if (IsCapsLockOn)
+        {
+            isCapsLock.SetActive(true);
+        }
+        else
+        {
+            isCapsLock.SetActive(false);
         }
     }
 
