@@ -39,6 +39,7 @@ public class Player : MonoBehaviour
 
     Animator anim; // player Animation Play
 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -57,7 +58,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!gm.isGameOver)
+        if(!gm.isGameOver && !gm.pauseWindow.activeSelf)
         {
             PlayerController();
             currentPosition = transform.position;

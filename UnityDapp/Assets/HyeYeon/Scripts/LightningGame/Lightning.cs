@@ -22,15 +22,19 @@ public class Lightning : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!gm.isGameOver)
+        if (!gm.pauseWindow.activeSelf)
         {
-            MoveToPlayer();
+            if (!gm.isGameOver)
+            {
+                MoveToPlayer();
+            }
+
+            if (4.0f <= Vector3.Distance(new Vector3(0, 0, 0), transform.position))
+            {
+                Destroy(gameObject);
+            }
         }
         
-        if(4.0f <= Vector3.Distance(new Vector3(0, 0, 0), transform.position))
-        {
-            Destroy(gameObject);
-        }
     }
 
     // 플레이어를 찾아 이동

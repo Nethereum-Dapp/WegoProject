@@ -57,6 +57,7 @@ public class PlayerControl : MonoBehaviour
 
     Animator anim;
     public GameObject wall;
+    public GameObject pauseWindow;
 
     void Awake()
     {
@@ -100,24 +101,27 @@ public class PlayerControl : MonoBehaviour
     {
         if (!gameOver)
         {
-            if (!isBurning)
+            if (!pauseWindow.activeSelf)
             {
-                time -= Time.deltaTime;
-                timeText.text = time.ToString("N0");
-            }
+                if (!isBurning)
+                {
+                    time -= Time.deltaTime;
+                    timeText.text = time.ToString("N0");
+                }
 
-            score += Time.deltaTime;
-            scoreText.text = "Score : " + score.ToString("N0");
+                score += Time.deltaTime;
+                scoreText.text = "Score : " + score.ToString("N0");
 
-            PlyerController();
+                PlyerController();
 
-            if (burningBar_EnergyField.fillAmount >= 0.05f)
-            {
-                burningBar_EnergyField.fillAmount -= 0.00025f;
-            }
-            else if(burningBar_EnergyField.fillAmount < 0.05f)
-            {
-                burningBar_EnergyField.fillAmount = 0.05f;
+                if (burningBar_EnergyField.fillAmount >= 0.05f)
+                {
+                    burningBar_EnergyField.fillAmount -= 0.00025f;
+                }
+                else if (burningBar_EnergyField.fillAmount < 0.05f)
+                {
+                    burningBar_EnergyField.fillAmount = 0.05f;
+                }
             }
 
         } else
@@ -206,12 +210,11 @@ public class PlayerControl : MonoBehaviour
     {
         gameStartText.text = "Game Start !!!";
         rd2.velocity = new Vector2(0.5f, 2f);
-
         yield return new WaitForSeconds(1.5f);
 
         gameOver = false;
         gameStartText.enabled = false;
-        
+
         PlyerController();
     }
 

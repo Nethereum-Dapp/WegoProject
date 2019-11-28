@@ -47,6 +47,8 @@ public class GM : MonoBehaviour
 
     int lightningCount; // lightning clone level count
 
+    public GameObject pauseWindow;
+
     void Awake()
     {
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
@@ -74,38 +76,42 @@ public class GM : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!isGameOver)
+        if (!pauseWindow.activeSelf)
         {
-            if(!player.isBurning)
+            if (!isGameOver)
             {
-                time -= Time.deltaTime;
-                timeText.text = time.ToString("N0");
-
-                degree = Random.Range(0, 360f);
-
-                currentTime += Time.deltaTime;
-
-                lightningCount = Random.Range(1, 3);
-
-                if (currentTime > term)
+                if (!player.isBurning)
                 {
-                    currentTime = 0.0f;
-                    GenerateLightning(lightningCount);
+                    time -= Time.deltaTime;
+                    timeText.text = time.ToString("N0");
+
+                    degree = Random.Range(0, 360f);
+
+                    currentTime += Time.deltaTime;
+
+                    lightningCount = Random.Range(1, 3);
+
+                    if (currentTime > term)
+                    {
+                        currentTime = 0.0f;
+                        GenerateLightning(lightningCount);
+                    }
+                }
+            }
+            else
+            {
+                if (gameOverText.activeSelf == false)
+                {
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        startText.text = "GameStart !!";
+                        StartCoroutine(GameStartText());
+                    }
+                    else return; // GameOver
                 }
             }
         }
-        else
-        {
-            if(gameOverText.activeSelf == false)
-            {
-                if (Input.GetMouseButtonDown(0))
-                {
-                    startText.text = "GameStart !!";
-                    StartCoroutine(GameStartText());
-                }
-                else return; // GameOver
-            }
-        }
+        
         if (time <= 0)
         {
             time = 60;

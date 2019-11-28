@@ -72,6 +72,9 @@ public class GameManager : MonoBehaviour
     private Text rubyScoreUI; // 얻은 루비 갯수를 나타내는 UI
     private int rubyScore; // 루비의 갯수
 
+    [SerializeField]
+    private GameObject pauseWindow; // 정지화면
+
     void Awake()
     {
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
@@ -82,7 +85,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         sound = GetComponent<SoundManager>();
-
+        
         sound.AudioManager(0);
 
         gameOver = false;
@@ -113,7 +116,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!gameOver)
+        if (!gameOver && !pauseWindow.activeSelf)
         {
             PlayerCursor();
 
