@@ -69,8 +69,8 @@ public class GameManager : MonoBehaviour
     private AudioSource sfx; // 루비 얻을 시 효과음
 
     [SerializeField]
-    private Text rubyTextUI; // 얻은 루비 갯수를 나타내는 UI
-    private float rubyText; // 루비의 갯수
+    private Text rubyScoreUI; // 얻은 루비 갯수를 나타내는 UI
+    private int rubyScore; // 루비의 갯수
 
     void Awake()
     {
@@ -91,7 +91,7 @@ public class GameManager : MonoBehaviour
 
         burningBar_EnergyField.fillAmount = 0.05f;
 
-        rubyText = 0f;
+        rubyScore = 0;
 
         isBurning = false;
 
@@ -188,8 +188,8 @@ public class GameManager : MonoBehaviour
         {
             sfx.Play();
             score += 100;
-            rubyText++;
-            rubyTextUI.text = " : " + rubyText;
+            rubyScore++;
+            rubyScoreUI.text = " : " + rubyScore;
             scoreText.text = "Score : " + score;
             burningBar_EnergyField.fillAmount += 0.5f;
             DestroyBuger();
@@ -308,8 +308,8 @@ public class GameManager : MonoBehaviour
             {
                 DestroyBuger();
                 score += 100;
-                rubyText++;
-                rubyTextUI.text = " : " + rubyText;
+                rubyScore++;
+                rubyScoreUI.text = " : " + rubyScore;
                 scoreText.text = "Score : " + score;
                 sfx.Play();
 
@@ -384,6 +384,7 @@ public class GameManager : MonoBehaviour
                 highScoreText.text = "HighScore : " + highScore;
             }
         }
+        AccountManager.Instance.ReceiveTokenTransfer(rubyScore);
     }
 
    
