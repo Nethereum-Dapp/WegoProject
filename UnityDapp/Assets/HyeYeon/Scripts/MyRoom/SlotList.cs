@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SlotList : MonoBehaviour
@@ -8,7 +9,9 @@ public class SlotList : MonoBehaviour
 
     public static SlotList instance;
 
-    ClickItem item;
+    public GameObject[] myItmeLoad;
+
+    private ClickItem clickItem;
 
     public bool addItem;
 
@@ -28,14 +31,42 @@ public class SlotList : MonoBehaviour
     void Start()
     {
         addItem = false;
-        item = FindObjectOfType<ClickItem>();
-        // 저장된 list 가져오는 부분
+        clickItem = FindObjectOfType<ClickItem>();
+        ItemLoad();
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    // 블록에서 저장된 아이템 리스트 가져오는 부분
+    public async void ItemLoad()
+    {
+        await AccountManager.Instance.GetPlayerItem();
+
+        List<string> item = AccountManager.Instance.tokenContractService.inventory;
+
+        for (int i = 0; i < item.Count; i++)
+        {
+            string[] words = item[i].Split(new char[] { '/' });
+
+            if (words[1] == "0")
+            {
+                continue;
+            }
+            else
+            {
+                int index = int.Parse(words[0]);
+                GameObject clone = Instantiate(myItmeLoad[index], clickItem.myContents.transform.position, Quaternion.identity);
+                clone.transform.SetParent(clickItem.myContents.transform, false);
+                itemList.Add(clone);
+                itemList.Last().GetComponent<Item>().ItemInfo.itemCount = int.Parse(words[1]);
+                clickItem.ItemCountCheck(clone);
+            }
+        }
+
     }
 
     // 리스트 저장하는 부분
@@ -53,8 +84,7 @@ public class SlotList : MonoBehaviour
             if (itemName == itemList[i].GetComponent<Item>().ItemInfo.itemName)
             {
                 itemList[i].GetComponent<Item>().ItemInfo.itemCount += count;
-                //Debug.Log(itemList[i].GetComponent<Item>().ItemInfo.itemCount);
-                item.ItemCountCheck(itemList[i]);
+                clickItem.ItemCountCheck(itemList[i]);
                 return;
             }
         }

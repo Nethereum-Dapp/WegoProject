@@ -18,8 +18,7 @@ public class ClickItem : MonoBehaviour
     
     public int rubyCoin; // 코인 갯수
 
-    [SerializeField]
-    private GameObject myContents; // 구매한 내 아이템
+    public GameObject myContents; // 구매한 내 아이템
 
     [SerializeField]
     private Text warningText; // 돈이 부족할때 뜨는 메세지
@@ -56,6 +55,7 @@ public class ClickItem : MonoBehaviour
 
         rubyCoin = await AccountManager.Instance.GetTokenBalanceOf();
         rubyCoinUI.text = " : " + rubyCoin;
+
     }
 
     // Update is called once per frame

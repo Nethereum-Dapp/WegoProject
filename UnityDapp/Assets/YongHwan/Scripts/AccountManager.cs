@@ -63,7 +63,7 @@ public class AccountManager : MonoBehaviour
     private Account account;
     private Web3 web3;
 
-    private static RubiTokenWrapper tokenContractService;
+    public RubiTokenWrapper tokenContractService;
 
     private void Awake()
     {
@@ -85,9 +85,10 @@ public class AccountManager : MonoBehaviour
         return balance;
     }
 
-    public void GetPlayerItem()
+    public async Task<bool> GetPlayerItem()
     {
-        tokenContractService.GetPlayerItem();
+        await tokenContractService.GetPlayerItem();
+        return true;
     }
 
     public void ReceiveTokenTransfer(int amount)

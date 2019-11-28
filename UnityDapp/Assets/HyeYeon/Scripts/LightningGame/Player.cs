@@ -12,7 +12,7 @@ public class Player : MonoBehaviour
 
     [SerializeField]
     private Text rubyScoreText; // Ruby score text UI
-    private float rubyScore; // Ruby score 점수 변수
+    private int rubyScore; // Ruby score 점수 변수
 
     [SerializeField]
     private Text scoreText; // score text UI
@@ -39,6 +39,7 @@ public class Player : MonoBehaviour
 
     Animator anim; // player Animation Play
 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -57,7 +58,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!gm.isGameOver)
+        if(!gm.isGameOver && !gm.pauseWindow.activeSelf)
         {
             PlayerController();
             currentPosition = transform.position;
@@ -200,6 +201,9 @@ public class Player : MonoBehaviour
                 highScoreText.text = "HighScore : "+ highScore.ToString("N0");
             }
         }
+
+        AccountManager.Instance.ReceiveTokenTransfer(rubyScore);
+
     }
 
 }

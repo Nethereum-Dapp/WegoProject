@@ -127,8 +127,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4906289b662491e46896d48a004968e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toolTip: {fileID: 0}
-  toolTipTextUI: {fileID: 0}
+  countBG: {fileID: 3338732833850594259}
+  itemCountUI: {fileID: 6449883046961131220}
+  itemCount: 0
 --- !u!1 &3338732833850594259
 GameObject:
   m_ObjectHideFlags: 0
@@ -146,7 +147,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3071319475940673145
 RectTransform:
   m_ObjectHideFlags: 0
@@ -278,4 +279,4 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 0
+  m_Text: 1

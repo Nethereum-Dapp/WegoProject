@@ -57,7 +57,7 @@ public class RubiTokenWrapper
         return count;
     }
 
-    public async void GetPlayerItem()
+    public async Task<bool> GetPlayerItem()
     {
         account = new Account(WalletManager.Instance.privateKey);
         web3 = new Web3(account, WalletManager.Instance.URL);
@@ -77,6 +77,8 @@ public class RubiTokenWrapper
             inventory.Add(getPlayerItemOutputDTO.ItemIndex + "/" + getPlayerItemOutputDTO.Count);
             Debug.Log(getPlayerItemOutputDTO.ItemIndex + "/" + getPlayerItemOutputDTO.Count);
         }
+
+        return true;
     }
 
     public async void Transfer()
