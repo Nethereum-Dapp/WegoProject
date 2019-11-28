@@ -7,7 +7,7 @@ public class UIManager : MonoBehaviour
 {
     public GameObject creatCanvas;
     public GameObject loginCanvas;
-    public GameObject isCapsLock;
+    public Image isCapsLock;
     public Text passwordStrength;
     public Text passwordStrength2;
     public bool creatFlag = false;
@@ -44,11 +44,11 @@ public class UIManager : MonoBehaviour
 
         if (IsCapsLockOn)
         {
-            isCapsLock.SetActive(true);
+            isCapsLock.enabled = true;
         }
         else
         {
-            isCapsLock.SetActive(false);
+            isCapsLock.enabled = false;
         }
     }
 
