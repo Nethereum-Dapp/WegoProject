@@ -1,7 +1,6 @@
 # WegoProject
-Unity DApp Project With Net461
++ Unity DApp Project With Net461
 ===============
-## blockchain game
 목차 
 ------------------
 ------------------
