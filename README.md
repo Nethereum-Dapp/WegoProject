@@ -20,3 +20,5 @@
 #### 5. 번개피하기 게임
 + 제한 시간동안 루비 아이템을 먹으며 방향키 or ASWD 키를 이용하여 오래 살아남는 게임. HP바가 다 닳으면 게임 오버. 
 ------------------
+### 6. 관련 영상
++ https://www.youtube.com/watch?v=3a2siqcunXI&list=PL4dAcKjtg56ulpvyDjfdIMqy9bDfUaQbb&index=2
